@@ -825,9 +825,9 @@
                   <th class="py-2.5 px-3.5 w-10">#</th>
                   <th class="py-2.5 px-3 min-w-[260px]">Dergi / Konferans Adı</th>
                   <th class="py-2.5 px-3 min-w-[140px]">Yayıncı</th>
-                  <th class="py-2.5 px-3 text-center">İncelenen Yayın</th>
-                  <th class="py-2.5 px-3 text-center">Ort. Atıf / Yayın</th>
-                  <th class="py-2.5 px-3.5 min-w-[190px]">Bu Konudaki Toplam Atıf</th>
+                  <th onclick="setJournalSort('articleCount')" class="py-2.5 px-3 text-center cursor-pointer hover:text-blue-700 select-none">İncelenen Yayın ↕</th>
+                  <th onclick="setJournalSort('avgCitations')" class="py-2.5 px-3 text-center cursor-pointer hover:text-blue-700 select-none">Ort. Atıf / Yayın ↕</th>
+                  <th onclick="setJournalSort('totalCitations')" class="py-2.5 px-3.5 min-w-[190px] cursor-pointer hover:text-blue-700 select-none">Bu Konudaki Toplam Atıf ↕</th>
                 </tr>
               </thead>
               <tbody id="top-journals-tbody" class="divide-y divide-slate-200 text-slate-900 bg-white">
@@ -852,11 +852,20 @@
 
             <!-- Filters & Actions -->
             <div class="flex flex-wrap items-center gap-2">
-              <div class="relative min-w-[220px] flex-1 sm:flex-initial">
+              <div class="relative min-w-[200px] flex-1 sm:flex-initial">
                 <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[16px]">search</span>
                 <input id="local-table-search" oninput="renderArticlesTable()"
                   class="w-full pl-8 pr-3 py-1.5 rounded border border-slate-300 bg-white text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Başlık, yazar veya özet içinde ara..." type="text" />
+              </div>
+
+              <!-- Journal Filter Dropdown (En Çok Atıf Alan Dergilere Göre Filtreleme) -->
+              <div class="relative">
+                <select id="table-journal-select" onchange="filterByJournalDropdown(this.value)"
+                  class="appearance-none max-w-[210px] truncate pl-2.5 pr-7 py-1.5 rounded border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="all">Tüm Dergiler (Atıf Sıralı)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-[14px] pointer-events-none">expand_more</span>
               </div>
 
               <!-- Year Dropdown -->
@@ -872,7 +881,9 @@
               <div class="relative">
                 <select id="table-sort-select" onchange="changeSortOrder(this.value)"
                   class="appearance-none pl-2.5 pr-7 py-1.5 rounded border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
-                  <option value="cited_by_count:desc">Atıfa göre (Yüksekten düşüğe)</option>
+                  <option value="cited_by_count:desc">Atıfa göre (Makale atıfı yüksekten düşüğe)</option>
+                  <option value="journal_total_citations:desc">En çok atıf alan dergiye göre (Dergi toplam atıfı)</option>
+                  <option value="journal_avg_citations:desc">En etkili dergiye göre (Dergi ort. atıfı)</option>
                   <option value="publication_year:desc">Yıla göre en yeni</option>
                   <option value="relevance_score:desc">İlgi düzeyine göre (Alaka)</option>
                 </select>
@@ -894,9 +905,9 @@
                 <tr>
                   <th class="py-2.5 px-3.5 min-w-[420px]" scope="col">Başlık, Makale Özeti (Abstract) &amp; DOI</th>
                   <th class="py-2.5 px-3 min-w-[160px]" scope="col">Yazarlar</th>
-                  <th class="py-2.5 px-2 text-center" scope="col">Yıl</th>
-                  <th class="py-2.5 px-3 min-w-[150px]" scope="col">Dergi / Yayıncı</th>
-                  <th class="py-2.5 px-2 text-center" scope="col">Atıf</th>
+                  <th onclick="quickColumnSort('publication_year:desc')" class="py-2.5 px-2 text-center cursor-pointer hover:text-blue-700 select-none" scope="col">Yıl ↕</th>
+                  <th onclick="quickColumnSort('journal_total_citations:desc')" class="py-2.5 px-3 min-w-[165px] cursor-pointer hover:text-blue-700 select-none" scope="col" title="En çok atıf alan dergilere göre sıralamak için tıklayın">Dergi / Yayıncı (Atıf Sırala ↕)</th>
+                  <th onclick="quickColumnSort('cited_by_count:desc')" class="py-2.5 px-2 text-center cursor-pointer hover:text-blue-700 select-none" scope="col">Atıf ↕</th>
                   <th class="py-2.5 px-3 text-right" scope="col">Bağlantı</th>
                 </tr>
               </thead>
@@ -1333,6 +1344,7 @@
 
       state.publisher = publisher;
       state.selectedYearFilter = "all";
+      state.selectedJournalFilter = "all";
       state.page = 1;
 
       switchMainTab("kesfet");
@@ -1353,6 +1365,11 @@
     }
 
     function getEffectiveSortParam() {
+      // Dergi atıfına göre sıralama seçildiğinde OpenAlex'ten en çok atıf alan makaleleri çekip
+      // istemci tarafında dergi toplam/ortalama atıfına göre sıralıyoruz.
+      if (state.sortBy === "journal_total_citations:desc" || state.sortBy === "journal_avg_citations:desc") {
+        return "cited_by_count:desc";
+      }
       if (state.titleOnly && state.sortBy === "relevance_score:desc") {
         return "cited_by_count:desc";
       }
@@ -1887,15 +1904,37 @@
           </tr>
         `;
       }).join("");
+
+      populateJournalDropdown();
+    }
+
+    function populateJournalDropdown() {
+      const sel = document.getElementById("table-journal-select");
+      if (!sel) return;
+      const sorted = [...(state.topJournals || [])].sort((a, b) => (b.totalCitations || 0) - (a.totalCitations || 0));
+      const currentVal = state.selectedJournalFilter || "all";
+      sel.innerHTML = `<option value="all" ${currentVal === "all" ? "selected" : ""}>Tüm Dergiler (Atıf Sıralı)</option>` +
+        sorted.map((j, i) => {
+          const safe = j.name.replace(/"/g, "&quot;");
+          const isSel = currentVal === j.name ? "selected" : "";
+          return `<option value="${safe}" ${isSel}>${i + 1}. ${j.name} (${j.totalCitations.toLocaleString("tr-TR")} atıf)</option>`;
+        }).join("");
+    }
+
+    function filterByJournalDropdown(val) {
+      state.selectedJournalFilter = val;
+      const searchInput = document.getElementById("local-table-search");
+      if (searchInput && val === "all") {
+        searchInput.value = "";
+      }
+      renderArticlesTable();
     }
 
     function filterByJournalName(journalName) {
-      const searchInput = document.getElementById("local-table-search");
-      if (searchInput) {
-        searchInput.value = journalName;
-        renderArticlesTable();
-        document.getElementById("publications-section").scrollIntoView({ behavior: "smooth" });
-      }
+      state.selectedJournalFilter = journalName;
+      populateJournalDropdown();
+      renderArticlesTable();
+      document.getElementById("publications-section").scrollIntoView({ behavior: "smooth" });
     }
 
     function exportJournalsCSV() {
@@ -1942,17 +1981,36 @@
       }
     }
 
+    function quickColumnSort(sortVal) {
+      const sel = document.getElementById("table-sort-select");
+      if (sel) sel.value = sortVal;
+      changeSortOrder(sortVal);
+    }
+
     function changeSortOrder(sortVal) {
       state.sortBy = sortVal;
       state.page = 1;
+      // Dergi atıfına göre sıralama zaten çekilen en çok atıflı küme üzerinde anında çalışır
+      if (sortVal === "journal_total_citations:desc" || sortVal === "journal_avg_citations:desc") {
+        renderArticlesTable();
+        return;
+      }
       fetchWorksOnly();
     }
 
     function renderArticlesTable() {
       const tbody = document.getElementById("articles-tbody");
       const searchVal = (document.getElementById("local-table-search").value || "").toLowerCase().trim();
+      const journalFilterVal = state.selectedJournalFilter || "all";
 
-      const filtered = state.articles.filter(a => {
+      // Dergi istatistik haritası (her derginin bu konudaki toplam ve ortalama atıfı)
+      const journalStatsMap = {};
+      (state.topJournals || []).forEach(j => {
+        journalStatsMap[j.name] = j;
+      });
+
+      let filtered = state.articles.filter(a => {
+        if (journalFilterVal !== "all" && a.journal !== journalFilterVal) return false;
         if (!searchVal) return true;
         return (a.title || "").toLowerCase().includes(searchVal) ||
                (a.abstract || "").toLowerCase().includes(searchVal) ||
@@ -1960,9 +2018,28 @@
                (a.journal || "").toLowerCase().includes(searchVal);
       });
 
+      // Eğer "En çok atıf alan dergiye göre" veya "En etkili dergiye göre" seçiliyse sırala
+      if (state.sortBy === "journal_total_citations:desc") {
+        filtered = [...filtered].sort((a, b) => {
+          const jA = journalStatsMap[a.journal]?.totalCitations || 0;
+          const jB = journalStatsMap[b.journal]?.totalCitations || 0;
+          if (jB !== jA) return jB - jA;
+          return (b.citations || 0) - (a.citations || 0);
+        });
+      } else if (state.sortBy === "journal_avg_citations:desc") {
+        filtered = [...filtered].sort((a, b) => {
+          const jA = journalStatsMap[a.journal]?.avgCitations || 0;
+          const jB = journalStatsMap[b.journal]?.avgCitations || 0;
+          if (jB !== jA) return jB - jA;
+          return (b.citations || 0) - (a.citations || 0);
+        });
+      }
+
       document.getElementById("table-total-badge").textContent = state.totalWorksCount.toLocaleString("tr-TR");
       document.getElementById("table-filter-subtitle").textContent =
-        state.selectedYearFilter === "all"
+        journalFilterVal !== "all"
+          ? `"${journalFilterVal}" dergisindeki yayınlar gösteriliyor`
+          : state.selectedYearFilter === "all"
           ? `${state.minYear}–${state.maxYear} yılları arasındaki yayınların başlığı, yılı ve tam özeti gösteriliyor`
           : `${state.selectedYearFilter} yılına ait yayınların başlığı, yılı ve tam özeti filtrelendi`;
 
@@ -1970,7 +2047,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="6" class="py-10 text-center text-slate-500">
-              Bu kriterlere uygun çalışma bulunamadı. Anahtar kelimeleri veya yıl filtresini genişletin.
+              Bu kriterlere uygun çalışma bulunamadı. Anahtar kelimeleri veya dergi/yıl filtresini genişletin.
             </td>
           </tr>`;
         return;
@@ -1979,6 +2056,7 @@
       tbody.innerHTML = filtered.map((art, idx) => {
         const hlTitle = highlightKeywords(art.title);
         const hlAbstract = highlightKeywords(art.abstract);
+        const jStat = journalStatsMap[art.journal];
         return `
           <tr class="hover:bg-blue-50/40 transition-colors align-top">
             <td class="py-3.5 px-3.5">
@@ -2019,9 +2097,10 @@
               ${art.year}
             </td>
             <td class="py-3.5 px-3">
-              <div class="flex flex-col">
+              <div class="flex flex-col gap-0.5">
                 <span class="font-medium text-slate-800 italic">${art.journal}</span>
                 <span class="text-[11px] text-slate-500">${art.publisher || "Akademik İndeks"}</span>
+                ${jStat ? `<span class="inline-flex items-center w-fit mt-0.5 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-semibold">Dergi Top. Atıf: ${jStat.totalCitations.toLocaleString("tr-TR")}</span>` : ""}
               </div>
             </td>
             <td class="py-3.5 px-2 text-center">
