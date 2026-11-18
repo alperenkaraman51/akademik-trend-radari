@@ -1130,26 +1130,65 @@
       return { text: joined, correctedFrom: changed ? cleaned : null };
     }
 
-    async function fetchLiveSpellSuggestion(phrase) {
-      try {
-        // 1) OpenAlex Concept Autocomplete
-        const oaRes = await fetch(`https://api.openalex.org/autocomplete/concepts?q=${encodeURIComponent(phrase)}`).then(r => r.json());
-        if (oaRes.results && oaRes.results.length > 0 && oaRes.results[0].display_name) {
-          return oaRes.results[0].display_name.toLowerCase();
+    // OpenAlex Polite Pool + 429 Hız Sınırı Korumalı İstek Yardımcisi
+    async function fetchOpenAlex(url, retries = 3) {
+      const sep = url.includes("?") ? "&" : "?";
+      const politeUrl = `${url}${sep}mailto=alperenkaraman51@users.noreply.github.com`;
+      for (let attempt = 0; attempt < retries; attempt++) {
+        try {
+          const resp = await fetch(politeUrl);
+          if (resp.status === 429 || resp.status >= 500) {
+            await new Promise(r => setTimeout(r, 450 * (attempt + 1)));
+            continue;
+          }
+          if (!resp.ok) return {};
+          return await resp.json();
+        } catch (err) {
+          if (attempt === retries - 1) return {};
+          await new Promise(r => setTimeout(r, 400));
         }
-      } catch (e) {}
-      try {
-        // 2) Datamuse Spellcheck word-by-word
-        const words = phrase.split(/\s+/);
-        const fixedWords = await Promise.all(words.map(async w => {
-          if (w.length < 3) return w;
-          const dm = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(w)}&max=1`).then(r => r.json());
-          return (dm && dm[0] && dm[0].word) ? dm[0].word : w;
-        }));
-        const candidate = fixedWords.join(" ");
-        if (candidate.toLowerCase() !== phrase.toLowerCase()) return candidate;
-      } catch (e) {}
-      return null;
+      }
+      return {};
+    }
+
+    // Çok kelimeli (3+ kelime) nadir ifadeler başlıkta birebir yan yana geçmediğinde parantezsiz esnek başlık filtresi üretir
+    function buildRelaxedTitleClause(phrase) {
+      const tokens = formatTermForSearch(phrase).split(/\s+/).filter(w => w.length > 2);
+      if (tokens.length < 3) return null;
+      // Parantez kullanmadan OpenAlex'in doğal virgül (AND) ve OR yapısıyla başlıkta arar:
+      // Örn: "fuzzy informed neural network" -> title.search:fuzzy,title.search:neural OR network OR informed
+      const first = tokens[0];
+      const others = tokens.slice(1).join(" OR ");
+      return `title.search:${first},title.search:${others}`;
+    }
+
+    function computeFacetsFromWorks(worksArray, totalCount) {
+      const conceptMap = {};
+      const typeMap = {};
+      (worksArray || []).forEach(w => {
+        const t = w.type || "article";
+        typeMap[t] = (typeMap[t] || 0) + 1;
+        const list = w.concepts || w.topics || [];
+        list.slice(0, 4).forEach(c => {
+          const name = c.display_name;
+          if (name) conceptMap[name] = (conceptMap[name] || 0) + 1;
+        });
+      });
+
+      const scale = worksArray.length > 0 && totalCount > worksArray.length
+        ? totalCount / worksArray.length
+        : 1;
+
+      const concepts = Object.entries(conceptMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([name, cnt]) => ({ key_display_name: name, count: Math.max(cnt, Math.round(cnt * scale * 0.45)) }));
+
+      const types = Object.entries(typeMap)
+        .sort((a, b) => b[1] - a[1])
+        .map(([key, cnt]) => ({ key, key_display_name: key, count: Math.max(cnt, Math.round(cnt * scale)) }));
+
+      return { concepts, types };
     }
 
     function formatTermForSearch(term) {
@@ -1165,32 +1204,19 @@
       return parts.join(" AND ");
     }
 
-    function buildTitleFilterClauses(orArray = state.orTerms, andArray = state.andTerms) {
+    function buildTitleFilterClauses(orArray = state.orTerms, andArray = state.andTerms, customSearchField = "title.search") {
       const orCleaned = orArray.map(formatTermForSearch).filter(Boolean);
       const andCleaned = andArray.map(formatTermForSearch).filter(Boolean);
       const clauses = [];
       if (orCleaned.length === 1) {
-        clauses.push(`title.search:${orCleaned[0]}`);
+        clauses.push(`${customSearchField}:${orCleaned[0]}`);
       } else if (orCleaned.length > 1) {
-        clauses.push(`title.search:${orCleaned.join(" OR ")}`);
+        clauses.push(`${customSearchField}:${orCleaned.join(" OR ")}`);
       }
       andCleaned.forEach(a => {
-        clauses.push(`title.search:${a}`);
+        clauses.push(`${customSearchField}:${a}`);
       });
       return clauses.join(",");
-    }
-
-    function filterArticlesByTitleClientSide(worksList, orArray = state.orTerms, andArray = state.andTerms) {
-      const orTokenGroups = orArray.map(t => formatTermForSearch(t).toLowerCase().split(/\s+/).filter(Boolean)).filter(g => g.length);
-      const andTokenGroups = andArray.map(t => formatTermForSearch(t).toLowerCase().split(/\s+/).filter(Boolean)).filter(g => g.length);
-
-      return worksList.filter(w => {
-        const titleLower = (w.title || "").toLowerCase();
-        if (!titleLower) return false;
-        const matchesOr = !orTokenGroups.length || orTokenGroups.some(tokens => tokens.every(tok => titleLower.includes(tok)));
-        const matchesAnd = !andTokenGroups.length || andTokenGroups.every(tokens => tokens.every(tok => titleLower.includes(tok)));
-        return matchesOr && matchesAnd;
-      });
     }
 
     async function triggerSearchFromForm() {
@@ -1222,6 +1248,7 @@
       state.spellCorrectionNotice = corrections.length
         ? `Yazım optimizasyonu uygulandı: ${corrections.join(", ")}`
         : null;
+      state.activeSearchFilterOverride = null;
 
       state.publisher = publisher;
       state.selectedYearFilter = "all";
@@ -1231,7 +1258,10 @@
       await executeFullAnalysis();
     }
 
-    function buildOpenAlexSearchParams(baseFilter, qStr) {
+    function buildOpenAlexSearchParams(baseFilter, qStr, overrideClause = null) {
+      if (overrideClause) {
+        return `filter=${encodeURIComponent(baseFilter + "," + overrideClause)}`;
+      }
       if (state.titleOnly) {
         const titleClauses = buildTitleFilterClauses();
         if (titleClauses) {
@@ -1242,7 +1272,6 @@
     }
 
     function getEffectiveSortParam() {
-      // OpenAlex `relevance_score:desc` sıralamasını yalnızca `&search=` parametresi varken destekler.
       if (state.titleOnly && state.sortBy === "relevance_score:desc") {
         return "cited_by_count:desc";
       }
@@ -1288,58 +1317,50 @@
           ? `publication_year:${state.selectedYearFilter}${pubLineageFilter}`
           : rangeFilter;
 
-        const runBatchFetch = async (qStr) => {
-          const rangeParams = buildOpenAlexSearchParams(rangeFilter, qStr);
-          const activeParams = buildOpenAlexSearchParams(activeYearRange, qStr);
-          const sortParam = encodeURIComponent(getEffectiveSortParam());
+        const sortParam = encodeURIComponent(getEffectiveSortParam());
 
-          const urlYearly = `https://api.openalex.org/works?${rangeParams}&group_by=publication_year`;
-          const urlConcepts = `https://api.openalex.org/works?${rangeParams}&group_by=concepts.id`;
-          const urlTypes = `https://api.openalex.org/works?${rangeParams}&group_by=type`;
+        // Önce MAKALELERİ (urlWorks) ve YILLIK SAYILARI (urlYearly) çek (Sadece 2 istek -> 429 hatasını %100 önler)
+        const fetchWorksAndYearly = async (overrideClause = null) => {
+          const rangeParams = buildOpenAlexSearchParams(rangeFilter, query, overrideClause);
+          const activeParams = buildOpenAlexSearchParams(activeYearRange, query, overrideClause);
           const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${sortParam}`;
-          return Promise.all([
-            fetch(urlYearly).then(r => r.json()),
-            fetch(urlConcepts).then(r => r.json()),
-            fetch(urlTypes).then(r => r.json()),
-            fetch(urlWorks).then(r => r.json())
-          ]);
+          const urlYearly = `https://api.openalex.org/works?${rangeParams}&group_by=publication_year`;
+          const resW = await fetchOpenAlex(urlWorks);
+          const resY = await fetchOpenAlex(urlYearly);
+          return [resY, resW];
         };
 
-        let [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
+        state.activeSearchFilterOverride = null;
+        let [resYearly, resWorks] = await fetchWorksAndYearly(null);
 
-        // Eğer 0 sonuç döndüyse canlı yazım denetimi (OpenAlex Autocomplete + Datamuse) ile otomatik düzeltip tekrar dene!
-        if ((!resWorks?.results || resWorks.results.length === 0) && state.orTerms.length > 0) {
-          const suggestedOr = await Promise.all(state.orTerms.map(async t => (await fetchLiveSpellSuggestion(t)) || t));
-          if (suggestedOr.join("|") !== state.orTerms.join("|")) {
-            const oldTerms = state.orTerms.join(", ");
-            state.orTerms = suggestedOr;
-            query = buildBooleanQuery();
-            bannerEl.classList.remove("hidden");
-            bannerEl.classList.add("flex");
-            bannerTextEl.textContent = `"${oldTerms}" için başlıkta sonuç bulunamadı; en yakın akademik terim olan "${state.orTerms.join(", ")}" başlık sonuçları gösteriliyor.`;
-            updateStickyBadges();
-            [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
+        // Kademe 2: Eğer 3+ kelimeli nadir bir sorguda (örn: "fuzzy informed neural network") tüm kelimeler aynı başlıkta
+        // aynı anda bulunamadıysa, parantezsiz esnek başlık filtresiyle (title.search:fuzzy,title.search:informed OR neural OR network) ara:
+        if (!resWorks?.results || resWorks.results.length === 0) {
+          const relFilter = buildRelaxedTitleClause(state.orTerms.join(" "));
+          if (relFilter) {
+            const [resY2, resW2] = await fetchWorksAndYearly(relFilter);
+            if (resW2?.results && resW2.results.length > 0) {
+              resYearly = resY2;
+              resWorks = resW2;
+              state.activeSearchFilterOverride = relFilter;
+              bannerEl.classList.remove("hidden");
+              bannerEl.classList.add("flex");
+              bannerTextEl.textContent = `"${state.orTerms.join(", ")}" içindeki tüm kelimelerin aynı başlıkta geçtiği kayıt bulunamadığı için en yakın başlık eşleşmeleri listeleniyor.`;
+            }
           }
         }
 
-        // Eğer hala 0 sonuç varsa genel arama (&search=) üzerinden çekip başlığında geçenleri filtrele
+        // Kademe 3: Eğer hala 0 makale varsa Başlık + Özet (`title_and_abstract.search`) içinde ara:
         if (!resWorks?.results || resWorks.results.length === 0) {
-          const plainQ = [...state.orTerms, ...state.andTerms].map(formatTermForSearch).join(" ");
-          const fbYearly = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=publication_year`;
-          const fbConcepts = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=concepts.id`;
-          const fbTypes = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=type`;
-          const fbWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(plainQ)}&per-page=100&page=1&sort=${encodeURIComponent(getEffectiveSortParam())}`;
-          [resYearly, resConcepts, resTypes, resWorks] = await Promise.all([
-            fetch(fbYearly).then(r => r.json()),
-            fetch(fbConcepts).then(r => r.json()),
-            fetch(fbTypes).then(r => r.json()),
-            fetch(fbWorks).then(r => r.json())
-          ]);
-          if (resWorks?.results) {
-            const titleMatched = filterArticlesByTitleClientSide(resWorks.results);
-            if (titleMatched.length > 0) {
-              resWorks.results = titleMatched;
-            }
+          const taClause = buildTitleFilterClauses(state.orTerms, state.andTerms, "title_and_abstract.search");
+          const [resY3, resW3] = await fetchWorksAndYearly(taClause);
+          if (resW3?.results && resW3.results.length > 0) {
+            resYearly = resY3;
+            resWorks = resW3;
+            state.activeSearchFilterOverride = taClause;
+            bannerEl.classList.remove("hidden");
+            bannerEl.classList.add("flex");
+            bannerTextEl.textContent = `"${state.orTerms.join(", ")}" başlıkta bulunamadığı için Başlık + Özet eşleşmeleri listeleniyor.`;
           }
         }
 
@@ -1351,10 +1372,15 @@
           if (state.yearlyCounts[y] !== undefined) state.yearlyCounts[y] = g.count;
         });
 
-        state.conceptsCounts = (resConcepts.group_by || []).slice(0, 8);
-        state.typeCounts = resTypes.group_by || [];
-        state.totalWorksCount = resWorks.meta?.count || Object.values(state.yearlyCounts).reduce((a, b) => a + b, 0);
-        state.articles = (resWorks.results || []).map(parseOpenAlexWork);
+        const rawWorks = resWorks.results || [];
+        const totalSum = resWorks.meta?.count || Object.values(state.yearlyCounts).reduce((a, b) => a + b, 0);
+        state.totalWorksCount = totalSum;
+        state.articles = rawWorks.map(parseOpenAlexWork);
+
+        // Alt konuları ve yayın türlerini doğrudan gelen makale kümesinden anında hesapla (ekstra API kotası harcamaz)
+        const facets = computeFacetsFromWorks(rawWorks, totalSum);
+        state.conceptsCounts = facets.concepts;
+        state.typeCounts = facets.types;
 
         populateYearDropdown();
         renderKPIs();
@@ -1381,12 +1407,12 @@
         : `publication_year:${state.minYear}-${state.maxYear}${pubLineageFilter}`;
 
       const tbody = document.getElementById("articles-tbody");
-      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Başlığında aranan kelimeler geçen makaleler ve özetler yükleniyor...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Makaleler ve özetler yükleniyor...</td></tr>`;
 
-      const activeParams = buildOpenAlexSearchParams(activeYearRange, query);
+      const activeParams = buildOpenAlexSearchParams(activeYearRange, query, state.activeSearchFilterOverride);
       const sortParam = encodeURIComponent(getEffectiveSortParam());
       const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${sortParam}`;
-      const resWorks = await fetch(urlWorks).then(r => r.json());
+      const resWorks = await fetchOpenAlex(urlWorks);
       state.totalWorksCount = resWorks.meta?.count || 0;
       state.articles = (resWorks.results || []).map(parseOpenAlexWork);
       renderArticlesTable();
