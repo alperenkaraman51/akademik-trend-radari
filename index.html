@@ -785,6 +785,60 @@
           </div>
         </div>
 
+        <!-- SECTION 4.5: ARANAN KELİME İÇİN EN ÇOK ATIF ALAN DERGİLER (TOP CITED JOURNALS) -->
+        <div class="rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <h3 class="text-lg font-bold text-slate-900 tracking-tight">Aranan Konuda En Çok Atıf Alan Dergiler</h3>
+                <span id="journals-count-badge" class="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">Top 10</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Seçtiğiniz anahtar kelimelerdeki yayınları en çok atıf toplayan akademik dergiler (Dergiye tıklayarak makalelerini filtreleyebilirsiniz)
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex items-center p-0.5 rounded-md bg-slate-100 border border-slate-200 text-xs">
+                <button type="button" id="btn-j-sort-total" onclick="setJournalSort('totalCitations')" class="px-2.5 py-1 rounded bg-white text-slate-900 font-semibold shadow-xs transition-all">
+                  Toplam Atıf
+                </button>
+                <button type="button" id="btn-j-sort-avg" onclick="setJournalSort('avgCitations')" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all">
+                  Ort. Atıf / Yayın
+                </button>
+                <button type="button" id="btn-j-sort-count" onclick="setJournalSort('articleCount')" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all">
+                  Yayın Sayısı
+                </button>
+              </div>
+              <button type="button" onclick="exportJournalsCSV()" class="px-2.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">download</span>
+                <span>Dergi CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="w-full overflow-x-auto rounded border border-slate-200">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3.5 w-10">#</th>
+                  <th class="py-2.5 px-3 min-w-[260px]">Dergi / Konferans Adı</th>
+                  <th class="py-2.5 px-3 min-w-[140px]">Yayıncı</th>
+                  <th class="py-2.5 px-3 text-center">İncelenen Yayın</th>
+                  <th class="py-2.5 px-3 text-center">Ort. Atıf / Yayın</th>
+                  <th class="py-2.5 px-3.5 min-w-[190px]">Bu Konudaki Toplam Atıf</th>
+                </tr>
+              </thead>
+              <tbody id="top-journals-tbody" class="divide-y divide-slate-200 text-slate-900 bg-white">
+                <tr>
+                  <td colspan="6" class="py-6 text-center text-slate-400">Analiz yapıldığında en çok atıf alan dergiler burada listelenir.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- SECTION 5: PUBLICATION LIST CARD (LITERATURE EXPLORER WITH FULL ABSTRACTS) -->
         <div class="rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col gap-4" id="publications-section">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-100">
@@ -898,13 +952,15 @@
       sourceLabel: "OpenAlex + Google Scholar",
       selectedYearFilter: "all",
       sortBy: "cited_by_count:desc",
+      journalSortBy: "totalCitations",
       chartMode: "abs", // 'abs' or 'norm'
       page: 1,
-      perPage: 25,
+      perPage: 50,
       totalWorksCount: 0,
       yearlyCounts: {},
       conceptsCounts: [],
       typeCounts: [],
+      topJournals: [],
       articles: []
     };
 
@@ -1165,6 +1221,8 @@
     function computeFacetsFromWorks(worksArray, totalCount) {
       const conceptMap = {};
       const typeMap = {};
+      const journalMap = {};
+
       (worksArray || []).forEach(w => {
         const t = w.type || "article";
         typeMap[t] = (typeMap[t] || 0) + 1;
@@ -1173,7 +1231,30 @@
           const name = c.display_name;
           if (name) conceptMap[name] = (conceptMap[name] || 0) + 1;
         });
+
+        // Dergi ve Atıf toplama
+        const loc = w.primary_location || {};
+        const src = loc.source || {};
+        const jName = src.display_name;
+        if (jName) {
+          if (!journalMap[jName]) {
+            journalMap[jName] = {
+              name: jName,
+              publisher: src.host_organization_name || "Akademik Yayıncı",
+              articleCount: 0,
+              totalCitations: 0,
+              avgCitations: 0
+            };
+          }
+          journalMap[jName].articleCount += 1;
+          journalMap[jName].totalCitations += (w.cited_by_count || 0);
+        }
       });
+
+      const journals = Object.values(journalMap).map(j => ({
+        ...j,
+        avgCitations: j.articleCount > 0 ? Math.round(j.totalCitations / j.articleCount) : 0
+      }));
 
       const scale = worksArray.length > 0 && totalCount > worksArray.length
         ? totalCount / worksArray.length
@@ -1188,7 +1269,7 @@
         .sort((a, b) => b[1] - a[1])
         .map(([key, cnt]) => ({ key, key_display_name: key, count: Math.max(cnt, Math.round(cnt * scale)) }));
 
-      return { concepts, types };
+      return { concepts, types, journals };
     }
 
     function formatTermForSearch(term) {
@@ -1377,16 +1458,18 @@
         state.totalWorksCount = totalSum;
         state.articles = rawWorks.map(parseOpenAlexWork);
 
-        // Alt konuları ve yayın türlerini doğrudan gelen makale kümesinden anında hesapla (ekstra API kotası harcamaz)
+        // Alt konuları, yayın türlerini ve en çok atıf alan dergileri doğrudan gelen makale kümesinden anında hesapla
         const facets = computeFacetsFromWorks(rawWorks, totalSum);
         state.conceptsCounts = facets.concepts;
         state.typeCounts = facets.types;
+        state.topJournals = facets.journals || [];
 
         populateYearDropdown();
         renderKPIs();
         renderComboChart();
         renderSubtopics();
         renderDonutChart();
+        renderTopJournals();
         renderArticlesTable();
       } catch (err) {
         console.error("Analiz hatası:", err);
@@ -1727,6 +1810,113 @@
           </div>
         `;
       }).join("");
+    }
+
+    // ===================== EN ÇOK ATIF ALAN DERGİLER =====================
+    function setJournalSort(sortKey) {
+      state.journalSortBy = sortKey;
+      const btns = {
+        totalCitations: document.getElementById("btn-j-sort-total"),
+        avgCitations: document.getElementById("btn-j-sort-avg"),
+        articleCount: document.getElementById("btn-j-sort-count")
+      };
+      Object.entries(btns).forEach(([k, btn]) => {
+        if (!btn) return;
+        if (k === sortKey) {
+          btn.className = "px-2.5 py-1 rounded bg-white text-slate-900 font-semibold shadow-xs transition-all";
+        } else {
+          btn.className = "px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all";
+        }
+      });
+      renderTopJournals();
+    }
+
+    function renderTopJournals() {
+      const tbody = document.getElementById("top-journals-tbody");
+      const badge = document.getElementById("journals-count-badge");
+      if (!tbody) return;
+
+      const sortKey = state.journalSortBy || "totalCitations";
+      const sorted = [...(state.topJournals || [])]
+        .sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0))
+        .slice(0, 10);
+
+      if (badge) badge.textContent = `${sorted.length} Dergi`;
+
+      if (!sorted.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-6 text-center text-slate-400">
+              Bu arama için dergi atıf verisi bulunamadı.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      const maxCitations = Math.max(1, ...sorted.map(j => j.totalCitations || 0));
+
+      tbody.innerHTML = sorted.map((j, idx) => {
+        const barPct = Math.max(5, Math.min(100, Math.round((j.totalCitations / maxCitations) * 100)));
+        const safeName = j.name.replace(/'/g, "\\'");
+        return `
+          <tr class="hover:bg-amber-50/40 transition-colors cursor-pointer group" onclick="filterByJournalName('${safeName}')">
+            <td class="py-3 px-3.5 font-bold text-slate-500">${idx + 1}</td>
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-slate-900 group-hover:text-[#1a73e8] transition-colors">${j.name}</span>
+                <span class="material-symbols-outlined text-[14px] text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" title="Bu derginin makalelerini filtrele">filter_alt</span>
+              </div>
+            </td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-medium">${j.publisher}</span>
+            </td>
+            <td class="py-3 px-3 text-center font-semibold text-slate-800">${j.articleCount}</td>
+            <td class="py-3 px-3 text-center">
+              <span class="px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-700 font-semibold">${j.avgCitations.toLocaleString("tr-TR")}</span>
+            </td>
+            <td class="py-3 px-3.5">
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-bold text-amber-800">${j.totalCitations.toLocaleString("tr-TR")} atıf</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div class="h-full bg-amber-500 rounded-full" style="width: ${barPct}%;"></div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function filterByJournalName(journalName) {
+      const searchInput = document.getElementById("local-table-search");
+      if (searchInput) {
+        searchInput.value = journalName;
+        renderArticlesTable();
+        document.getElementById("publications-section").scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function exportJournalsCSV() {
+      if (!state.topJournals || !state.topJournals.length) {
+        alert("Önce analiz yapın.");
+        return;
+      }
+      const sortKey = state.journalSortBy || "totalCitations";
+      const sorted = [...state.topJournals].sort((a, b) => (b[sortKey] || 0) - (a[sortKey] || 0));
+      const rows = [["Sira", "Dergi_Adi", "Yayinci", "Incelenen_Yayin_Sayisi", "Ortalama_Atif", "Toplam_Atif"]];
+      sorted.forEach((j, idx) => {
+        rows.push([
+          idx + 1,
+          `"${(j.name || "").replace(/"/g, '""')}"`,
+          `"${(j.publisher || "").replace(/"/g, '""')}"`,
+          j.articleCount || 0,
+          j.avgCitations || 0,
+          j.totalCitations || 0
+        ]);
+      });
+      downloadCSVFile(rows, "en_cok_atif_alan_dergiler.csv");
     }
 
     // ===================== MAKALE TABLOSU (BAŞLIK, YIL, TAM ÖZET) =====================
