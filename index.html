@@ -218,29 +218,23 @@
 
                   <!-- Interactive Chip Input Container -->
                   <div class="min-h-[50px] p-2 rounded-md bg-slate-50/70 border border-slate-300 flex flex-wrap items-center gap-2 transition-colors focus-within:bg-white focus-within:border-[#1a73e8] focus-within:ring-2 focus-within:ring-blue-100" id="or-chips-container">
-                    <span data-chip-val="fuzzy clustering" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
-                      <span class="w-1.5 h-1.5 rounded-full bg-[#1a73e8]"></span>
-                      <span class="chip-text">fuzzy clustering</span>
-                      <button aria-label="Kaldır" class="text-blue-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
-                      </button>
-                    </span>
-                    <span data-chip-val="fuzzy c-means" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
-                      <span class="w-1.5 h-1.5 rounded-full bg-[#1a73e8]"></span>
-                      <span class="chip-text">fuzzy c-means</span>
-                      <button aria-label="Kaldır" class="text-blue-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
-                      </button>
-                    </span>
                     <input class="flex-1 min-w-[220px] bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none px-2 py-1"
                       id="primary-keywords-input"
                       onkeydown="handleChipKeydown(event, this, 'or-chips-container', 'primary')"
-                      placeholder="Yeni terim yazıp Enter veya virgül'e basın... (Örn: machine learning)" type="text" />
+                      placeholder="Terim yazıp doğrudan 'Analiz Et'e veya Enter'a basın... (Örn: fuzzy clustering)" type="text" />
                   </div>
-                  <p class="text-xs text-slate-500 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px] text-blue-600">alt_route</span>
-                    Bu gruptaki terimlerden en az biri makale başlığı, özet veya anahtar kelimelerinde yer alır.
-                  </p>
+                  <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                    <span class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px] text-blue-600">alt_route</span>
+                      Yazım hataları (örn: <em>fuzz clustering</em> &rarr; <em>fuzzy clustering</em>) otomatik düzeltilir.
+                    </span>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <span class="text-[11px] text-slate-400">Hızlı ekle:</span>
+                      <button type="button" onclick="addChip(document.getElementById('primary-keywords-input'), 'or-chips-container', 'primary', 'fuzzy clustering')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 text-[11px] font-medium">+ fuzzy clustering</button>
+                      <button type="button" onclick="addChip(document.getElementById('primary-keywords-input'), 'or-chips-container', 'primary', 'machine learning')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 text-[11px] font-medium">+ machine learning</button>
+                      <button type="button" onclick="addChip(document.getElementById('primary-keywords-input'), 'or-chips-container', 'primary', 'deep learning')" class="px-2 py-0.5 rounded bg-blue-50 hover:bg-blue-100 text-[#1a73e8] border border-blue-200 text-[11px] font-medium">+ deep learning</button>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- 2. Birlikte Geçmesi Gereken Kelimeler (AND) -->
@@ -262,17 +256,10 @@
                   </div>
 
                   <div class="min-h-[50px] p-2 rounded-md bg-slate-50/70 border border-slate-300 flex flex-wrap items-center gap-2 transition-colors focus-within:bg-white focus-within:border-[#1a73e8] focus-within:ring-2 focus-within:ring-blue-100" id="and-chips-container">
-                    <span data-chip-val="image segmentation" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-300 text-slate-800 text-xs font-medium">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
-                      <span class="chip-text">image segmentation</span>
-                      <button aria-label="Kaldır" class="text-slate-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
-                        <span class="material-symbols-outlined text-[14px]">close</span>
-                      </button>
-                    </span>
                     <input class="flex-1 min-w-[220px] bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none px-2 py-1"
                       id="secondary-keywords-input"
                       onkeydown="handleChipKeydown(event, this, 'and-chips-container', 'secondary')"
-                      placeholder="Örn: healthcare, clinical, deep learning (yazıp Enter'a basın)..." type="text" />
+                      placeholder="İsteğe bağlı daraltıcı terim (Örn: image segmentation, healthcare)..." type="text" />
                   </div>
                   <p class="text-xs text-slate-500 flex items-center gap-1">
                     <span class="material-symbols-outlined text-[14px] text-emerald-700">check_circle</span>
@@ -306,12 +293,18 @@
                     </div>
                   </div>
 
-                  <!-- Yayıncı Filtresi -->
+                  <!-- Yayıncı ve Arama Kapsamı Filtresi -->
                   <div class="md:col-span-5 flex flex-col justify-between gap-2 border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
-                    <label for="publisher-filter-select" class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                      <span class="material-symbols-outlined text-[16px] text-[#1a73e8]">domain</span>
-                      Yayıncı Odağı
-                    </label>
+                    <div class="flex items-center justify-between">
+                      <label for="publisher-filter-select" class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px] text-[#1a73e8]">domain</span>
+                        Yayıncı &amp; Başlık Filtresi
+                      </label>
+                      <label class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#1a73e8] cursor-pointer">
+                        <input id="title-only-checkbox" type="checkbox" checked class="rounded border-slate-300 text-[#1a73e8] focus:ring-[#1a73e8] w-3.5 h-3.5" />
+                        <span>Başlıkta Geçsin</span>
+                      </label>
+                    </div>
                     <select id="publisher-filter-select" class="w-full rounded bg-white border border-slate-300 text-xs text-slate-800 py-2 px-2.5 focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]">
                       <option value="all">Tüm Yayıncılar (Küresel İndeks)</option>
                       <option value="Elsevier">Elsevier (ScienceDirect)</option>
@@ -593,6 +586,15 @@
 
       <!-- MAIN DASHBOARD CONTENT AREA -->
       <div class="w-full max-w-7xl mx-auto px-gutter py-space-md flex flex-col gap-space-lg" id="main-telemetry-view">
+
+        <!-- YAZIM DÜZELTME / AKILLI EŞLEŞTİRME BİLDİRİM BANTI -->
+        <div id="spellcheck-banner" class="hidden items-center justify-between gap-3 px-4 py-2.5 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900 shadow-xs">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px] text-amber-600">spellcheck</span>
+            <span id="spellcheck-banner-text">Yazım düzeltmesi uygulandı.</span>
+          </div>
+          <span class="px-2 py-0.5 rounded bg-white border border-amber-200 text-[11px] font-mono text-amber-800">Akıllı Sorgu Optimizasyonu</span>
+        </div>
 
         <!-- SECTION 2: 4 METRIC KPI CARDS -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -879,11 +881,12 @@
     };
 
     let state = {
-      orTerms: ["fuzzy clustering", "fuzzy c-means"],
-      andTerms: ["image segmentation"],
+      orTerms: ["fuzzy clustering"],
+      andTerms: [],
       minYear: 2018,
       maxYear: 2026,
       publisher: "all",
+      titleOnly: true,
       sourceLabel: "OpenAlex + Google Scholar",
       selectedYearFilter: "all",
       sortBy: "cited_by_count:desc",
@@ -1021,32 +1024,159 @@
       triggerSearchFromForm();
     }
 
-    // ===================== SORGULAMA VE ANALİZ MOTORU =====================
-    function buildBooleanQuery() {
+    // ===================== AKILLI YAZIM DÜZELTME VE SORGULAMA MOTORU =====================
+    const ACADEMIC_TYPO_MAP = {
+      "fuzz": "fuzzy",
+      "fuzy": "fuzzy",
+      "fuz": "fuzzy",
+      "clustring": "clustering",
+      "clusterin": "clustering",
+      "clusering": "clustering",
+      "machin": "machine",
+      "mashine": "machine",
+      "learnig": "learning",
+      "lerning": "learning",
+      "learing": "learning",
+      "segmention": "segmentation",
+      "segmantation": "segmentation",
+      "segmentaion": "segmentation",
+      "artifical": "artificial",
+      "artifcial": "artificial",
+      "inteligence": "intelligence",
+      "intelligance": "intelligence",
+      "netwrok": "network",
+      "netwok": "network",
+      "netowrk": "network",
+      "neurol": "neural",
+      "nueral": "neural",
+      "algoritm": "algorithm",
+      "algorthm": "algorithm",
+      "optmization": "optimization",
+      "optimisation": "optimization",
+      "clasification": "classification",
+      "classfication": "classification",
+      "healtcare": "healthcare",
+      "helthcare": "healthcare",
+      "clincal": "clinical",
+      "prediciton": "prediction",
+      "detecion": "detection",
+      "transfromer": "transformer",
+      "trasformer": "transformer",
+      "hallucnation": "hallucination",
+      "halucination": "hallucination"
+    };
+
+    const TURKISH_ACADEMIC_MAP = {
+      "bulanık kümeleme": "fuzzy clustering",
+      "bulanik kumeleme": "fuzzy clustering",
+      "makine öğrenmesi": "machine learning",
+      "makine ogrenmesi": "machine learning",
+      "derin öğrenme": "deep learning",
+      "derin ogrenme": "deep learning",
+      "yapay zeka": "artificial intelligence",
+      "görüntü işleme": "image processing",
+      "goruntu isleme": "image processing",
+      "görüntü segmentasyonu": "image segmentation",
+      "goruntu segmentasyonu": "image segmentation",
+      "doğal dil işleme": "natural language processing",
+      "dogal dil isleme": "natural language processing",
+      "büyük dil modelleri": "large language models",
+      "buyuk dil modelleri": "large language models"
+    };
+
+    function normalizePhrase(rawPhrase) {
+      let cleaned = (rawPhrase || "").trim().replace(/\s+/g, " ");
+      const lower = cleaned.toLowerCase();
+      if (TURKISH_ACADEMIC_MAP[lower]) {
+        return { text: TURKISH_ACADEMIC_MAP[lower], correctedFrom: cleaned };
+      }
+      let changed = false;
+      const words = cleaned.split(" ").map(w => {
+        const lw = w.toLowerCase().replace(/^["']|["']$/g, "");
+        if (ACADEMIC_TYPO_MAP[lw]) {
+          changed = true;
+          return ACADEMIC_TYPO_MAP[lw];
+        }
+        return w;
+      });
+      const joined = words.join(" ");
+      return { text: joined, correctedFrom: changed ? cleaned : null };
+    }
+
+    async function fetchLiveSpellSuggestion(phrase) {
+      try {
+        // 1) OpenAlex Concept Autocomplete
+        const oaRes = await fetch(`https://api.openalex.org/autocomplete/concepts?q=${encodeURIComponent(phrase)}`).then(r => r.json());
+        if (oaRes.results && oaRes.results.length > 0 && oaRes.results[0].display_name) {
+          return oaRes.results[0].display_name.toLowerCase();
+        }
+      } catch (e) {}
+      try {
+        // 2) Datamuse Spellcheck word-by-word
+        const words = phrase.split(/\s+/);
+        const fixedWords = await Promise.all(words.map(async w => {
+          if (w.length < 3) return w;
+          const dm = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(w)}&max=1`).then(r => r.json());
+          return (dm && dm[0] && dm[0].word) ? dm[0].word : w;
+        }));
+        const candidate = fixedWords.join(" ");
+        if (candidate.toLowerCase() !== phrase.toLowerCase()) return candidate;
+      } catch (e) {}
+      return null;
+    }
+
+    function formatTermForSearch(term) {
+      // OpenAlex filter parametresini bozabilecek virgül ve iki nokta üst üsteleri temizle
+      const t = term.replace(/[,:]/g, " ").trim().replace(/\s+/g, " ");
+      if (!t) return "";
+      if ((t.startsWith('"') && t.endsWith('"')) || !t.includes(" ")) {
+        return t;
+      }
+      const tokens = t.split(/\s+/).filter(Boolean);
+      return tokens.length > 1 ? `(${tokens.join(" AND ")})` : t;
+    }
+
+    function buildBooleanQuery(orArray = state.orTerms, andArray = state.andTerms) {
       const formatGroup = (arr) => {
-        const quoted = arr.map(k => k.includes(" ") ? `"${k}"` : k);
-        return quoted.length > 1 ? `(${quoted.join(" OR ")})` : (quoted[0] || "");
+        const formatted = arr.map(formatTermForSearch).filter(Boolean);
+        return formatted.length > 1 ? `(${formatted.join(" OR ")})` : (formatted[0] || "");
       };
       const parts = [];
-      if (state.orTerms.length) parts.push(formatGroup(state.orTerms));
-      if (state.andTerms.length) parts.push(formatGroup(state.andTerms));
+      if (orArray.length) parts.push(formatGroup(orArray));
+      if (andArray.length) parts.push(formatGroup(andArray));
       return parts.join(" AND ");
     }
 
     async function triggerSearchFromForm() {
-      const orTerms = readChipsFromContainer("or-chips-container", "primary-keywords-input");
-      const andTerms = readChipsFromContainer("and-chips-container", "secondary-keywords-input");
+      const rawOrTerms = readChipsFromContainer("or-chips-container", "primary-keywords-input");
+      const rawAndTerms = readChipsFromContainer("and-chips-container", "secondary-keywords-input");
       syncYearSliders();
       const publisher = document.getElementById("publisher-filter-select").value;
+      const titleOnlyEl = document.getElementById("title-only-checkbox");
+      state.titleOnly = titleOnlyEl ? titleOnlyEl.checked : true;
 
-      if (!orTerms.length) {
-        alert("Lütfen en az bir ana anahtar kelime yazıp Enter'a basın.");
+      if (!rawOrTerms.length) {
+        alert("Lütfen en az bir ana anahtar kelime yazın (örn: fuzzy clustering).");
         document.getElementById("primary-keywords-input").focus();
         return;
       }
 
-      state.orTerms = orTerms;
-      state.andTerms = andTerms;
+      const corrections = [];
+      state.orTerms = rawOrTerms.map(t => {
+        const res = normalizePhrase(t);
+        if (res.correctedFrom) corrections.push(`"${res.correctedFrom}" → "${res.text}"`);
+        return res.text;
+      });
+      state.andTerms = rawAndTerms.map(t => {
+        const res = normalizePhrase(t);
+        if (res.correctedFrom) corrections.push(`"${res.correctedFrom}" → "${res.text}"`);
+        return res.text;
+      });
+
+      state.spellCorrectionNotice = corrections.length
+        ? `Yazım optimizasyonu uygulandı: ${corrections.join(", ")}`
+        : null;
+
       state.publisher = publisher;
       state.selectedYearFilter = "all";
       state.page = 1;
@@ -1055,18 +1185,41 @@
       await executeFullAnalysis();
     }
 
+    function buildOpenAlexSearchParams(baseFilter, qStr) {
+      // Başlıkta Geçsin (titleOnly) aktifse OpenAlex'in `title.search:` filtresini kullanır;
+      // böylece dönen tüm makalelerin BAŞLIĞINDA aranan anahtar kelimeler kesin olarak yer alır.
+      if (state.titleOnly) {
+        return `filter=${encodeURIComponent(baseFilter + ",title.search:" + qStr)}`;
+      }
+      return `filter=${encodeURIComponent(baseFilter)}&search=${encodeURIComponent(qStr)}`;
+    }
+
     async function executeFullAnalysis() {
       const loadingEl = document.getElementById("preview-loading");
       const mainViewEl = document.getElementById("main-telemetry-view");
+      const bannerEl = document.getElementById("spellcheck-banner");
+      const bannerTextEl = document.getElementById("spellcheck-banner-text");
 
       loadingEl.classList.remove("hidden");
       loadingEl.classList.add("flex");
       mainViewEl.classList.add("opacity-40", "pointer-events-none");
 
+      if (state.spellCorrectionNotice) {
+        bannerEl.classList.remove("hidden");
+        bannerEl.classList.add("flex");
+        bannerTextEl.textContent = state.spellCorrectionNotice;
+      } else {
+        bannerEl.classList.add("hidden");
+        bannerEl.classList.remove("flex");
+      }
+
       updateStickyBadges();
 
-      const query = buildBooleanQuery();
-      const scholarQuery = encodeURIComponent(query + (state.publisher !== "all" ? ` "${state.publisher}"` : ""));
+      let query = buildBooleanQuery();
+      const scholarPrefix = state.titleOnly ? "allintitle: " : "";
+      const scholarQuery = encodeURIComponent(
+        scholarPrefix + [...state.orTerms, ...state.andTerms].join(" ") + (state.publisher !== "all" ? ` "${state.publisher}"` : "")
+      );
       document.getElementById("header-scholar-link").href =
         `https://scholar.google.com/scholar?q=${scholarQuery}&as_ylo=${state.minYear}&as_yhi=${state.maxYear}&hl=tr`;
 
@@ -1080,22 +1233,38 @@
           ? `publication_year:${state.selectedYearFilter}${pubLineageFilter}`
           : rangeFilter;
 
-        // Paralel API istekleri:
-        // 1) Yıllara göre yayın sayısı
-        const urlYearly = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=publication_year`;
-        // 2) En sık geçen alt konular (concepts)
-        const urlConcepts = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=concepts.id`;
-        // 3) Yayın türüne göre dağılım (article, proceedings, preprint, book-chapter)
-        const urlTypes = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=type`;
-        // 4) Makaleler (Başlık, Yıl, Tam Özet, Yazarlar, Dergi/Yayıncı, Atıf)
-        const urlWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(query)}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+        const runBatchFetch = async (qStr) => {
+          const rangeParams = buildOpenAlexSearchParams(rangeFilter, qStr);
+          const activeParams = buildOpenAlexSearchParams(activeYearRange, qStr);
 
-        const [resYearly, resConcepts, resTypes, resWorks] = await Promise.all([
-          fetch(urlYearly).then(r => r.json()),
-          fetch(urlConcepts).then(r => r.json()),
-          fetch(urlTypes).then(r => r.json()),
-          fetch(urlWorks).then(r => r.json())
-        ]);
+          const urlYearly = `https://api.openalex.org/works?${rangeParams}&group_by=publication_year`;
+          const urlConcepts = `https://api.openalex.org/works?${rangeParams}&group_by=concepts.id`;
+          const urlTypes = `https://api.openalex.org/works?${rangeParams}&group_by=type`;
+          const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+          return Promise.all([
+            fetch(urlYearly).then(r => r.json()),
+            fetch(urlConcepts).then(r => r.json()),
+            fetch(urlTypes).then(r => r.json()),
+            fetch(urlWorks).then(r => r.json())
+          ]);
+        };
+
+        let [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
+
+        // Eğer 0 sonuç döndüyse canlı yazım denetimi (OpenAlex Autocomplete + Datamuse) ile otomatik düzeltip tekrar dene!
+        if ((resWorks.meta?.count || 0) === 0 && state.orTerms.length > 0) {
+          const suggestedOr = await Promise.all(state.orTerms.map(async t => (await fetchLiveSpellSuggestion(t)) || t));
+          if (suggestedOr.join("|") !== state.orTerms.join("|")) {
+            const oldTerms = state.orTerms.join(", ");
+            state.orTerms = suggestedOr;
+            query = buildBooleanQuery();
+            bannerEl.classList.remove("hidden");
+            bannerEl.classList.add("flex");
+            bannerTextEl.textContent = `"${oldTerms}" için başlıkta sonuç bulunamadı; en yakın akademik terim olan "${state.orTerms.join(", ")}" başlık sonuçları gösteriliyor.`;
+            updateStickyBadges();
+            [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
+          }
+        }
 
         // Yıllık sayıları kaydet
         state.yearlyCounts = {};
@@ -1135,9 +1304,10 @@
         : `publication_year:${state.minYear}-${state.maxYear}${pubLineageFilter}`;
 
       const tbody = document.getElementById("articles-tbody");
-      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Makaleler ve özetler yükleniyor...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Başlığında aranan kelimeler geçen makaleler ve özetler yükleniyor...</td></tr>`;
 
-      const urlWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(query)}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+      const activeParams = buildOpenAlexSearchParams(activeYearRange, query);
+      const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
       const resWorks = await fetch(urlWorks).then(r => r.json());
       state.totalWorksCount = resWorks.meta?.count || 0;
       state.articles = (resWorks.results || []).map(parseOpenAlexWork);
