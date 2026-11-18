@@ -540,11 +540,19 @@
             </button>
           </div>
 
-          <!-- Right: Action Buttons -->
-          <div class="flex items-center gap-space-xs self-end lg:self-auto shrink-0">
+          <!-- Right: Quick Search & Action Buttons -->
+          <div class="flex flex-wrap items-center gap-space-xs self-end lg:self-auto shrink-0">
+            <form onsubmit="event.preventDefault(); runQuickBarSearch();" class="flex items-center gap-1">
+              <input id="quick-search-input" type="text" placeholder="Yeni başlık araması (örn: fuzzy clustering)..."
+                class="w-52 sm:w-64 px-2.5 py-1.5 rounded border border-slate-300 bg-white text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]" />
+              <button type="submit" class="px-3 py-1.5 rounded bg-[#1a73e8] hover:bg-[#1557bf] text-white font-semibold text-xs transition-colors shadow-xs flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">search</span>
+                <span>Ara</span>
+              </button>
+            </form>
             <button onclick="switchMainTab('arama')" class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-medium text-xs transition-colors shadow-sm" type="button">
-              <span class="material-symbols-outlined text-[15px] text-slate-600">edit</span>
-              <span>Aramayı Düzenle</span>
+              <span class="material-symbols-outlined text-[15px] text-slate-600">tune</span>
+              <span>Detaylı Arama</span>
             </button>
             <button onclick="shareCurrentQuery()" class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-medium text-xs transition-colors shadow-sm" type="button">
               <span class="material-symbols-outlined text-[15px] text-slate-600">share</span>
@@ -929,10 +937,29 @@
 
     // ===================== CHIP (ANAHTAR KELİME) YÖNETİMİ =====================
     function handleChipKeydown(event, inputEl, containerId, themeVariant) {
-      if (event.key === "Enter" || event.key === ",") {
+      if (event.key === ",") {
         event.preventDefault();
         addChip(inputEl, containerId, themeVariant);
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        if (inputEl.value.trim()) {
+          addChip(inputEl, containerId, themeVariant);
+        }
+        triggerSearchFromForm();
       }
+    }
+
+    function runQuickBarSearch() {
+      const qInput = document.getElementById("quick-search-input");
+      const val = (qInput?.value || "").trim();
+      if (!val) return;
+      resetFilters();
+      const orInput = document.getElementById("primary-keywords-input");
+      val.split(",").map(s => s.trim()).filter(Boolean).forEach(t => {
+        addChip(orInput, "or-chips-container", "primary", t);
+      });
+      qInput.value = "";
+      triggerSearchFromForm();
     }
 
     function addChip(inputEl, containerId, themeVariant, customValue) {
@@ -1126,25 +1153,44 @@
     }
 
     function formatTermForSearch(term) {
-      // OpenAlex filter parametresini bozabilecek virgül ve iki nokta üst üsteleri temizle
-      const t = term.replace(/[,:]/g, " ").trim().replace(/\s+/g, " ");
-      if (!t) return "";
-      if ((t.startsWith('"') && t.endsWith('"')) || !t.includes(" ")) {
-        return t;
-      }
-      const tokens = t.split(/\s+/).filter(Boolean);
-      return tokens.length > 1 ? `(${tokens.join(" AND ")})` : t;
+      return (term || "").replace(/[()",:|]/g, " ").trim().replace(/\s+/g, " ");
     }
 
     function buildBooleanQuery(orArray = state.orTerms, andArray = state.andTerms) {
-      const formatGroup = (arr) => {
-        const formatted = arr.map(formatTermForSearch).filter(Boolean);
-        return formatted.length > 1 ? `(${formatted.join(" OR ")})` : (formatted[0] || "");
-      };
+      const orCleaned = orArray.map(formatTermForSearch).filter(Boolean);
+      const andCleaned = andArray.map(formatTermForSearch).filter(Boolean);
       const parts = [];
-      if (orArray.length) parts.push(formatGroup(orArray));
-      if (andArray.length) parts.push(formatGroup(andArray));
+      if (orCleaned.length) parts.push(orCleaned.join(" OR "));
+      if (andCleaned.length) parts.push(andCleaned.join(" AND "));
       return parts.join(" AND ");
+    }
+
+    function buildTitleFilterClauses(orArray = state.orTerms, andArray = state.andTerms) {
+      const orCleaned = orArray.map(formatTermForSearch).filter(Boolean);
+      const andCleaned = andArray.map(formatTermForSearch).filter(Boolean);
+      const clauses = [];
+      if (orCleaned.length === 1) {
+        clauses.push(`title.search:${orCleaned[0]}`);
+      } else if (orCleaned.length > 1) {
+        clauses.push(`title.search:${orCleaned.join(" OR ")}`);
+      }
+      andCleaned.forEach(a => {
+        clauses.push(`title.search:${a}`);
+      });
+      return clauses.join(",");
+    }
+
+    function filterArticlesByTitleClientSide(worksList, orArray = state.orTerms, andArray = state.andTerms) {
+      const orTokenGroups = orArray.map(t => formatTermForSearch(t).toLowerCase().split(/\s+/).filter(Boolean)).filter(g => g.length);
+      const andTokenGroups = andArray.map(t => formatTermForSearch(t).toLowerCase().split(/\s+/).filter(Boolean)).filter(g => g.length);
+
+      return worksList.filter(w => {
+        const titleLower = (w.title || "").toLowerCase();
+        if (!titleLower) return false;
+        const matchesOr = !orTokenGroups.length || orTokenGroups.some(tokens => tokens.every(tok => titleLower.includes(tok)));
+        const matchesAnd = !andTokenGroups.length || andTokenGroups.every(tokens => tokens.every(tok => titleLower.includes(tok)));
+        return matchesOr && matchesAnd;
+      });
     }
 
     async function triggerSearchFromForm() {
@@ -1186,12 +1232,21 @@
     }
 
     function buildOpenAlexSearchParams(baseFilter, qStr) {
-      // Başlıkta Geçsin (titleOnly) aktifse OpenAlex'in `title.search:` filtresini kullanır;
-      // böylece dönen tüm makalelerin BAŞLIĞINDA aranan anahtar kelimeler kesin olarak yer alır.
       if (state.titleOnly) {
-        return `filter=${encodeURIComponent(baseFilter + ",title.search:" + qStr)}`;
+        const titleClauses = buildTitleFilterClauses();
+        if (titleClauses) {
+          return `filter=${encodeURIComponent(baseFilter + "," + titleClauses)}`;
+        }
       }
       return `filter=${encodeURIComponent(baseFilter)}&search=${encodeURIComponent(qStr)}`;
+    }
+
+    function getEffectiveSortParam() {
+      // OpenAlex `relevance_score:desc` sıralamasını yalnızca `&search=` parametresi varken destekler.
+      if (state.titleOnly && state.sortBy === "relevance_score:desc") {
+        return "cited_by_count:desc";
+      }
+      return state.sortBy || "cited_by_count:desc";
     }
 
     async function executeFullAnalysis() {
@@ -1236,11 +1291,12 @@
         const runBatchFetch = async (qStr) => {
           const rangeParams = buildOpenAlexSearchParams(rangeFilter, qStr);
           const activeParams = buildOpenAlexSearchParams(activeYearRange, qStr);
+          const sortParam = encodeURIComponent(getEffectiveSortParam());
 
           const urlYearly = `https://api.openalex.org/works?${rangeParams}&group_by=publication_year`;
           const urlConcepts = `https://api.openalex.org/works?${rangeParams}&group_by=concepts.id`;
           const urlTypes = `https://api.openalex.org/works?${rangeParams}&group_by=type`;
-          const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+          const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${sortParam}`;
           return Promise.all([
             fetch(urlYearly).then(r => r.json()),
             fetch(urlConcepts).then(r => r.json()),
@@ -1252,7 +1308,7 @@
         let [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
 
         // Eğer 0 sonuç döndüyse canlı yazım denetimi (OpenAlex Autocomplete + Datamuse) ile otomatik düzeltip tekrar dene!
-        if ((resWorks.meta?.count || 0) === 0 && state.orTerms.length > 0) {
+        if ((!resWorks?.results || resWorks.results.length === 0) && state.orTerms.length > 0) {
           const suggestedOr = await Promise.all(state.orTerms.map(async t => (await fetchLiveSpellSuggestion(t)) || t));
           if (suggestedOr.join("|") !== state.orTerms.join("|")) {
             const oldTerms = state.orTerms.join(", ");
@@ -1263,6 +1319,27 @@
             bannerTextEl.textContent = `"${oldTerms}" için başlıkta sonuç bulunamadı; en yakın akademik terim olan "${state.orTerms.join(", ")}" başlık sonuçları gösteriliyor.`;
             updateStickyBadges();
             [resYearly, resConcepts, resTypes, resWorks] = await runBatchFetch(query);
+          }
+        }
+
+        // Eğer hala 0 sonuç varsa genel arama (&search=) üzerinden çekip başlığında geçenleri filtrele
+        if (!resWorks?.results || resWorks.results.length === 0) {
+          const plainQ = [...state.orTerms, ...state.andTerms].map(formatTermForSearch).join(" ");
+          const fbYearly = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=publication_year`;
+          const fbConcepts = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=concepts.id`;
+          const fbTypes = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(plainQ)}&group_by=type`;
+          const fbWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(plainQ)}&per-page=100&page=1&sort=${encodeURIComponent(getEffectiveSortParam())}`;
+          [resYearly, resConcepts, resTypes, resWorks] = await Promise.all([
+            fetch(fbYearly).then(r => r.json()),
+            fetch(fbConcepts).then(r => r.json()),
+            fetch(fbTypes).then(r => r.json()),
+            fetch(fbWorks).then(r => r.json())
+          ]);
+          if (resWorks?.results) {
+            const titleMatched = filterArticlesByTitleClientSide(resWorks.results);
+            if (titleMatched.length > 0) {
+              resWorks.results = titleMatched;
+            }
           }
         }
 
@@ -1307,7 +1384,8 @@
       tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Başlığında aranan kelimeler geçen makaleler ve özetler yükleniyor...</td></tr>`;
 
       const activeParams = buildOpenAlexSearchParams(activeYearRange, query);
-      const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+      const sortParam = encodeURIComponent(getEffectiveSortParam());
+      const urlWorks = `https://api.openalex.org/works?${activeParams}&per-page=${state.perPage}&page=${state.page}&sort=${sortParam}`;
       const resWorks = await fetch(urlWorks).then(r => r.json());
       state.totalWorksCount = resWorks.meta?.count || 0;
       state.articles = (resWorks.results || []).map(parseOpenAlexWork);
