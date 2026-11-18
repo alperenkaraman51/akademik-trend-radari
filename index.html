@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html class="light" lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <meta content="web_standard" name="shell-type" />
+  <title>Akademik Trend Radarı v1.4 — Bibliyometrik Literatür &amp; Makale Analizi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "outline-variant": "#e2e8f0",
+            "on-background": "#0f172a",
+            "primary-fixed-dim": "#adc7ff",
+            "inverse-on-surface": "#f8fafc",
+            "error-container": "#fee2e2",
+            "surface-bright": "#ffffff",
+            "surface-variant": "#f1f5f9",
+            "secondary-container": "#e0f2fe",
+            "surface-dim": "#f8fafc",
+            "primary-container": "#1a73e8",
+            "background": "#ffffff",
+            "on-primary-fixed-variant": "#004493",
+            "on-primary-container": "#ffffff",
+            "on-primary-fixed": "#001a41",
+            "on-surface-variant": "#475569",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed": "#001945",
+            "tertiary-container": "#dcfce7",
+            "surface-container": "#f1f5f9",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#bbf7d0",
+            "secondary-fixed-dim": "#b0c6ff",
+            "on-tertiary-container": "#14532d",
+            "error": "#dc2626",
+            "surface": "#ffffff",
+            "outline": "#94a3b8",
+            "on-tertiary": "#ffffff",
+            "surface-tint": "#1a73e8",
+            "inverse-primary": "#adc7ff",
+            "on-secondary-fixed-variant": "#00419c",
+            "primary-fixed": "#dbeafe",
+            "tertiary-fixed-dim": "#86efac",
+            "on-tertiary-fixed": "#052e16",
+            "on-surface": "#0f172a",
+            "on-error-container": "#991b1b",
+            "tertiary": "#15803d",
+            "on-secondary-container": "#0369a1",
+            "primary": "#1a73e8",
+            "surface-container-low": "#f8fafc",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e2e8f0",
+            "inverse-surface": "#1e293b",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#e0f2fe",
+            "surface-container-highest": "#cbd5e1",
+            "on-tertiary-fixed-variant": "#166534",
+            "secondary": "#0284c7",
+            brand: {
+              50: "#eff6ff",
+              100: "#dbeafe",
+              200: "#bfdbfe",
+              600: "#1a73e8",
+              700: "#1557bf",
+              800: "#174ea6"
+            }
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.375rem",
+            xl: "0.5rem",
+            full: "9999px"
+          },
+          spacing: {
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-xl": "2rem",
+            "gutter-mobile": "1rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "margin": "2rem"
+          },
+          fontFamily: {
+            sans: ["Inter", "system-ui", "-apple-system", "sans-serif"],
+            "headline-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "label-code": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-caps": ["Inter"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    mark.kw-highlight {
+      background-color: #fef08a;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col antialiased selection:bg-blue-100 selection:text-blue-900">
+
+  <!-- ÜST HEADER (Stitch Akademik Trend Radarı v1.4) -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="h-16 w-full max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="switchMainTab('arama')">
+        <div class="flex items-center justify-center w-9 h-9 rounded-md bg-blue-50 border border-blue-200 text-[#1a73e8]">
+          <span class="material-symbols-outlined text-[20px]">school</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-base text-slate-900 tracking-tight font-semibold">Akademik Trend Radarı</span>
+          <span class="px-2 py-0.5 rounded text-xs bg-slate-100 border border-slate-200 text-slate-600 font-mono">v1.4</span>
+        </div>
+      </div>
+
+      <nav class="flex items-center gap-1 p-1 rounded-lg bg-slate-100/80 border border-slate-200 text-sm font-medium">
+        <button id="nav-btn-arama" onclick="switchMainTab('arama')" class="px-4 py-1.5 rounded-md bg-white text-slate-900 shadow-sm border border-slate-200/60 font-semibold transition-all">
+          Arama
+        </button>
+        <button id="nav-btn-kesfet" onclick="switchMainTab('kesfet')" class="px-4 py-1.5 rounded-md text-slate-600 transition-colors hover:text-slate-900 hover:bg-slate-200/60">
+          Keşfet &amp; Sonuçlar
+        </button>
+        <button id="nav-btn-raporlar" onclick="exportArticlesCSV()" class="hidden sm:inline-flex items-center gap-1 px-4 py-1.5 rounded-md text-slate-600 transition-colors hover:text-slate-900 hover:bg-slate-200/60">
+          <span class="material-symbols-outlined text-[16px]">download</span>
+          <span>Rapor İndir</span>
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a id="header-scholar-link" href="https://scholar.google.com" target="_blank" rel="noopener"
+          class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-mono hover:bg-slate-50 transition-colors">
+          <span class="material-symbols-outlined text-[15px] text-[#1a73e8]">open_in_new</span>
+          <span>Google Akademik</span>
+        </a>
+        <div class="w-8 h-8 rounded-full bg-[#1a73e8] text-white flex items-center justify-center text-sm font-semibold shadow-xs" title="Alperen Karaman">
+          <span>A</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full pt-16 flex-1 bg-[#f8fafc]">
+
+    <!-- ===================================================================== -->
+    <!-- EKRAN 1: ARAMA EKRANI (akademik_trend_radar_arama_akademik_stil)       -->
+    <!-- ===================================================================== -->
+    <div id="view-arama" class="flex flex-col w-full">
+      <div class="relative w-full pb-12">
+        <div class="max-w-5xl mx-auto px-6 relative z-10">
+          <!-- Hero Header Section -->
+          <section class="flex flex-col items-center text-center pt-10 md:pt-14 pb-8">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-medium shadow-xs mb-4">
+              <span class="material-symbols-outlined text-[16px] text-[#1a73e8]">analytics</span>
+              <span class="tracking-wide uppercase text-[11px] font-semibold text-slate-700">Bibliyometrik Literatür &amp; Eğilim Analizi</span>
+            </div>
+            <h1 class="text-3xl md:text-4xl text-slate-900 max-w-3xl tracking-tight font-bold leading-tight">
+              Bir araştırma alanının trendini <span class="text-[#1a73e8]">akademik veriyle</span> keşfedin
+            </h1>
+            <p class="text-base text-slate-600 max-w-2xl mt-3 leading-relaxed">
+              Milyonlarca hakemli yayın arasında derinlemesine anahtar kelime analizi yapın; makale özetlerini, yıllık literatür ivmesini, yayıncı ve atıf dağılımını inceleyin.
+            </p>
+          </section>
+
+          <!-- Main Search Card -->
+          <section class="w-full max-w-4xl mx-auto">
+            <div class="rounded-lg bg-white border border-slate-200 shadow-sm p-6 sm:p-8">
+              <form class="flex flex-col gap-6" id="radar-search-form" onsubmit="event.preventDefault(); triggerSearchFromForm();">
+
+                <!-- 1. Ana Anahtar Kelimeler (OR) -->
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-700" for="primary-keywords-input">
+                      <span class="w-2 h-2 rounded-full bg-[#1a73e8]"></span>
+                      <span>Ana anahtar kelimeler</span>
+                      <div class="group relative cursor-help inline-flex items-center">
+                        <span class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-[16px]">info</span>
+                        <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:flex flex-col w-56 p-2.5 rounded bg-slate-900 text-white text-xs shadow-lg z-30 pointer-events-none">
+                          Bu gruptaki terimler VEYA / OR mantığıyla taranır. En az birinin yayında geçmesi aranır.
+                        </div>
+                      </div>
+                    </label>
+                    <span class="font-mono text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded font-medium">
+                      VEYA / OR
+                    </span>
+                  </div>
+
+                  <!-- Interactive Chip Input Container -->
+                  <div class="min-h-[50px] p-2 rounded-md bg-slate-50/70 border border-slate-300 flex flex-wrap items-center gap-2 transition-colors focus-within:bg-white focus-within:border-[#1a73e8] focus-within:ring-2 focus-within:ring-blue-100" id="or-chips-container">
+                    <span data-chip-val="fuzzy clustering" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#1a73e8]"></span>
+                      <span class="chip-text">fuzzy clustering</span>
+                      <button aria-label="Kaldır" class="text-blue-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </span>
+                    <span data-chip-val="fuzzy c-means" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 border border-blue-200 text-blue-900 text-xs font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-[#1a73e8]"></span>
+                      <span class="chip-text">fuzzy c-means</span>
+                      <button aria-label="Kaldır" class="text-blue-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </span>
+                    <input class="flex-1 min-w-[220px] bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none px-2 py-1"
+                      id="primary-keywords-input"
+                      onkeydown="handleChipKeydown(event, this, 'or-chips-container', 'primary')"
+                      placeholder="Yeni terim yazıp Enter veya virgül'e basın... (Örn: machine learning)" type="text" />
+                  </div>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-blue-600">alt_route</span>
+                    Bu gruptaki terimlerden en az biri makale başlığı, özet veya anahtar kelimelerinde yer alır.
+                  </p>
+                </div>
+
+                <!-- 2. Birlikte Geçmesi Gereken Kelimeler (AND) -->
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-700" for="secondary-keywords-input">
+                      <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                      <span>Birlikte geçmesi gereken kelimeler <span class="text-slate-400 font-normal lowercase">(isteğe bağlı)</span></span>
+                      <div class="group relative cursor-help inline-flex items-center">
+                        <span class="material-symbols-outlined text-slate-400 hover:text-slate-600 text-[16px]">info</span>
+                        <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 hidden group-hover:flex flex-col w-56 p-2.5 rounded bg-slate-900 text-white text-xs shadow-lg z-30 pointer-events-none">
+                          Bu terimler VE / AND mantığıyla filtrelenir; sonuçların hepsinde bulunmalıdır.
+                        </div>
+                      </div>
+                    </label>
+                    <span class="font-mono text-xs text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-medium">
+                      VE / AND
+                    </span>
+                  </div>
+
+                  <div class="min-h-[50px] p-2 rounded-md bg-slate-50/70 border border-slate-300 flex flex-wrap items-center gap-2 transition-colors focus-within:bg-white focus-within:border-[#1a73e8] focus-within:ring-2 focus-within:ring-blue-100" id="and-chips-container">
+                    <span data-chip-val="image segmentation" class="chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-100 border border-slate-300 text-slate-800 text-xs font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                      <span class="chip-text">image segmentation</span>
+                      <button aria-label="Kaldır" class="text-slate-500 hover:text-red-600 transition-colors ml-0.5 inline-flex items-center" onclick="this.parentElement.remove()" type="button">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </span>
+                    <input class="flex-1 min-w-[220px] bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none px-2 py-1"
+                      id="secondary-keywords-input"
+                      onkeydown="handleChipKeydown(event, this, 'and-chips-container', 'secondary')"
+                      placeholder="Örn: healthcare, clinical, deep learning (yazıp Enter'a basın)..." type="text" />
+                  </div>
+                  <p class="text-xs text-slate-500 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-emerald-700">check_circle</span>
+                    Bu gruptaki filtre terimleri sonuç kümesinde zorunlu tutulur.
+                  </p>
+                </div>
+
+                <!-- 3. Yayın Yılı Aralığı & Yayıncı Seçimi -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 bg-slate-50 border border-slate-200 p-4 rounded-md">
+                  <div class="md:col-span-7 flex flex-col justify-between gap-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[18px] text-[#1a73e8]">date_range</span>
+                        Yayın Yılı Aralığı
+                      </span>
+                      <div class="flex items-center gap-2 font-mono text-xs">
+                        <input id="input-year-min" type="number" min="1990" max="2026" value="2018" onchange="syncYearSliders()"
+                          class="w-20 px-2 py-1 rounded bg-white border border-slate-200 text-slate-800 font-semibold text-xs text-center shadow-xs focus:border-[#1a73e8] focus:outline-none" />
+                        <span class="text-slate-400">—</span>
+                        <input id="input-year-max" type="number" min="1990" max="2026" value="2026" onchange="syncYearSliders()"
+                          class="w-20 px-2 py-1 rounded bg-white border border-slate-200 text-[#1a73e8] font-semibold text-xs text-center shadow-xs focus:border-[#1a73e8] focus:outline-none" />
+                      </div>
+                    </div>
+                    <!-- Hızlı Yıl Aralığı Butonları -->
+                    <div class="flex flex-wrap items-center gap-1.5 font-mono text-xs text-slate-500 pt-1">
+                      <span class="text-[11px] text-slate-400 mr-1">Hızlı Seçim:</span>
+                      <button type="button" onclick="setQuickYears(2015, 2026)" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-blue-400 hover:text-[#1a73e8]">2015–2026</button>
+                      <button type="button" onclick="setQuickYears(2018, 2026)" class="px-2 py-0.5 rounded bg-blue-50 border border-blue-200 text-[#1a73e8] font-semibold">2018–2026</button>
+                      <button type="button" onclick="setQuickYears(2020, 2026)" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-blue-400 hover:text-[#1a73e8]">2020–2026</button>
+                      <button type="button" onclick="setQuickYears(2022, 2026)" class="px-2 py-0.5 rounded bg-white border border-slate-200 hover:border-blue-400 hover:text-[#1a73e8]">Son 5 Yıl</button>
+                    </div>
+                  </div>
+
+                  <!-- Yayıncı Filtresi -->
+                  <div class="md:col-span-5 flex flex-col justify-between gap-2 border-t md:border-t-0 md:border-l border-slate-200 pt-3 md:pt-0 md:pl-4">
+                    <label for="publisher-filter-select" class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[16px] text-[#1a73e8]">domain</span>
+                      Yayıncı Odağı
+                    </label>
+                    <select id="publisher-filter-select" class="w-full rounded bg-white border border-slate-300 text-xs text-slate-800 py-2 px-2.5 focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8]">
+                      <option value="all">Tüm Yayıncılar (Küresel İndeks)</option>
+                      <option value="Elsevier">Elsevier (ScienceDirect)</option>
+                      <option value="Taylor & Francis">Taylor &amp; Francis</option>
+                      <option value="Springer Nature">Springer Nature</option>
+                      <option value="IEEE">IEEE</option>
+                      <option value="Wiley">Wiley</option>
+                      <option value="MDPI">MDPI</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 4. Kaynak (Academic Data Source Selection) -->
+                <div class="flex flex-col gap-2">
+                  <label class="text-xs font-semibold uppercase tracking-wider text-slate-700">Bibliyografik Kaynak &amp; Dizin</label>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-1 bg-slate-50 border border-slate-200 rounded-md">
+                    <button data-source="OpenAlex + Google Scholar" class="source-option-btn group relative flex items-center justify-between px-3.5 py-2.5 rounded bg-white border border-[#1a73e8] text-slate-900 shadow-xs transition-all text-left" onclick="selectSource(this)" type="button">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#1a73e8] text-[20px]">hub</span>
+                        <span class="text-sm font-semibold">OpenAlex</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded text-[11px] bg-blue-50 text-[#1a73e8] font-mono border border-blue-200">
+                        Önerilen
+                      </span>
+                    </button>
+                    <button data-source="Google Scholar" class="source-option-btn group relative flex items-center justify-between px-3.5 py-2.5 rounded bg-white border border-slate-200 hover:border-slate-300 text-slate-700 transition-all text-left" onclick="selectSource(this)" type="button">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-500 text-[20px]">school</span>
+                        <span class="text-sm font-medium">Google Scholar</span>
+                      </div>
+                      <span class="px-2 py-0.5 rounded text-[11px] bg-slate-100 text-slate-600 font-mono">
+                        Tam Özet
+                      </span>
+                    </button>
+                    <button data-source="Tüm Dizinler (Birleşik)" class="source-option-btn group relative flex items-center justify-center gap-2 px-3.5 py-2.5 rounded bg-white border border-slate-200 hover:border-slate-300 text-slate-700 transition-all" onclick="selectSource(this)" type="button">
+                      <span class="material-symbols-outlined text-slate-500 text-[20px]">dataset</span>
+                      <span class="text-sm font-medium">Tüm Dizinler (Birleşik)</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 5. Action Area (CTA & Reset) -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
+                  <button class="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer py-1.5" onclick="resetFilters()" type="button">
+                    <span class="material-symbols-outlined text-[18px]">restart_alt</span>
+                    <span>Filtreleri Sıfırla</span>
+                  </button>
+                  <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <button class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-md bg-[#1a73e8] hover:bg-[#1557bf] text-white text-sm font-semibold shadow-sm transition-all cursor-pointer" type="submit">
+                      <span class="material-symbols-outlined text-[20px]">search</span>
+                      <span>Analiz Et</span>
+                      <span class="ml-1 px-1.5 py-0.5 rounded bg-blue-800/40 text-blue-100 text-[11px] font-mono">
+                        ⌘ + Enter
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Son Yapılan Aramalar (Recent Academic Queries) -->
+          <section class="w-full max-w-4xl mx-auto mt-8">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <span class="material-symbols-outlined text-[16px]">history</span>
+                <span>Örnek &amp; Son Literatür Taramaları (Tıklayıp Analiz Edin)</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button" onclick="runPresetSearch(['machine learning', 'deep learning'], ['healthcare', 'clinical'], 2018, 2026)"
+                class="group flex items-center justify-between p-3.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs transition-all text-left">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#1a73e8] text-[20px] transition-colors">article</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm text-slate-800 font-medium truncate group-hover:text-[#1a73e8] transition-colors">
+                      machine learning, deep learning <span class="text-blue-700 font-semibold">AND</span> healthcare
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">2018 – 2026</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-[#1a73e8] font-mono text-xs border border-blue-200">
+                  <span>Analiz &rarr;</span>
+                </div>
+              </button>
+
+              <button type="button" onclick="runPresetSearch(['graph neural networks'], ['drug discovery'], 2020, 2026)"
+                class="group flex items-center justify-between p-3.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs transition-all text-left">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#1a73e8] text-[20px] transition-colors">article</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm text-slate-800 font-medium truncate group-hover:text-[#1a73e8] transition-colors">
+                      graph neural networks <span class="text-blue-700 font-semibold">AND</span> drug discovery
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">2020 – 2026</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-[#1a73e8] font-mono text-xs border border-blue-200">
+                  <span>Analiz &rarr;</span>
+                </div>
+              </button>
+
+              <button type="button" onclick="runPresetSearch(['large language models', 'generative ai'], ['hallucination'], 2021, 2026)"
+                class="group flex items-center justify-between p-3.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs transition-all text-left">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#1a73e8] text-[20px] transition-colors">article</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm text-slate-800 font-medium truncate group-hover:text-[#1a73e8] transition-colors">
+                      large language models <span class="text-emerald-700 font-semibold">AND</span> hallucination
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">2021 – 2026</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-[#1a73e8] font-mono text-xs border border-blue-200">
+                  <span>Analiz &rarr;</span>
+                </div>
+              </button>
+
+              <button type="button" onclick="runPresetSearch(['fuzzy clustering', 'fuzzy c-means'], ['image segmentation'], 2018, 2026)"
+                class="group flex items-center justify-between p-3.5 rounded-md bg-white border border-slate-200 hover:border-blue-400 hover:shadow-xs transition-all text-left">
+                <div class="flex items-center gap-2.5 min-w-0 pr-2">
+                  <span class="material-symbols-outlined text-slate-400 group-hover:text-[#1a73e8] text-[20px] transition-colors">article</span>
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-sm text-slate-800 font-medium truncate group-hover:text-[#1a73e8] transition-colors">
+                      fuzzy clustering <span class="text-blue-700 font-semibold">AND</span> image segmentation
+                    </span>
+                    <span class="text-xs font-mono text-slate-500">2018 – 2026</span>
+                  </div>
+                </div>
+                <div class="flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded bg-blue-50 text-[#1a73e8] font-mono text-xs border border-blue-200">
+                  <span>Analiz &rarr;</span>
+                </div>
+              </button>
+            </div>
+          </section>
+
+          <!-- Bottom Academic Verification & Telemetry Stats -->
+          <section class="w-full max-w-4xl mx-auto mt-10 pt-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="flex flex-col p-5 rounded-md bg-white border border-slate-200 shadow-xs">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-9 h-9 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1a73e8]">
+                    <span class="material-symbols-outlined text-[20px]">database</span>
+                  </div>
+                  <span class="text-xs font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Kapsam</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-900 tracking-tight">250M+</div>
+                <span class="text-sm font-semibold text-slate-800 mt-0.5">İndekslenen Yayın &amp; Özet</span>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Google Akademik ve OpenAlex veri tabanları ile canlı makale başlığı, yılı ve özet senkronizasyonu.
+                </p>
+                <div class="mt-4 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#1a73e8] rounded-full w-[88%]"></div>
+                </div>
+              </div>
+
+              <div class="flex flex-col p-5 rounded-md bg-white border border-slate-200 shadow-xs">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-9 h-9 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1a73e8]">
+                    <span class="material-symbols-outlined text-[20px]">trending_up</span>
+                  </div>
+                  <span class="text-xs font-mono text-[#1a73e8] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Canlı</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-900 tracking-tight">&lt; 1.2 sn</div>
+                <span class="text-sm font-semibold text-slate-800 mt-0.5">Trend Hesaplama Süresi</span>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Yıllık bileşik büyüme (CAGR) ve yayıncı bazlı literatür ivme katsayısı telemetrisi.
+                </p>
+                <div class="mt-4 w-full h-5 flex items-end">
+                  <svg class="w-full h-full text-[#1a73e8]" fill="none" preserveAspectRatio="none" viewBox="0 0 100 24">
+                    <path d="M0,20 Q20,18 35,12 T70,8 T100,2" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+                  </svg>
+                </div>
+              </div>
+
+              <div class="flex flex-col p-5 rounded-md bg-white border border-slate-200 shadow-xs">
+                <div class="flex items-center justify-between mb-3">
+                  <div class="w-9 h-9 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-[#1a73e8]">
+                    <span class="material-symbols-outlined text-[20px]">sim_card_download</span>
+                  </div>
+                  <span class="text-xs font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Formatlar</span>
+                </div>
+                <div class="text-2xl font-bold text-slate-900 tracking-tight">CSV / Excel</div>
+                <span class="text-sm font-semibold text-slate-800 mt-0.5">Tam Özetli Dışa Aktarım</span>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                  Makale başlığı, yayın yılı, yazarlar, dergi ve tam özet (abstract) içeren tablo ihracı.
+                </p>
+                <div class="mt-4 flex items-center gap-1.5 font-mono text-xs text-slate-600">
+                  <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-medium">Başlık</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-medium">Yıl</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-medium">Tam Özet</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- EKRAN 2: ANALİZ VE SONUÇLAR EKRANI (akademik_trend_radar_analiz...)   -->
+    <!-- ===================================================================== -->
+    <div id="view-kesfet" class="hidden flex-col w-full">
+
+      <!-- SECTION 1: STICKY QUERY TELEMETRY CONTROLS -->
+      <section class="sticky top-16 z-40 w-full bg-white/95 backdrop-blur-md border-b border-outline-variant shadow-sm">
+        <div class="max-w-7xl mx-auto px-gutter py-2.5 flex flex-col lg:flex-row lg:items-center justify-between gap-space-sm">
+          <!-- Left: Active Query Badges -->
+          <div class="flex items-center gap-space-xs flex-wrap">
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-medium">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+              <span class="text-slate-500 font-normal">Ana:</span>
+              <span id="badge-or-terms" class="font-semibold text-blue-900">"fuzzy clustering", "fuzzy c-means"</span>
+            </div>
+            <div id="badge-and-wrapper" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sky-50 border border-sky-200/80 text-sky-800 text-xs">
+              <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+              <span class="text-slate-500">Birlikte:</span>
+              <span id="badge-and-terms" class="font-semibold text-sky-900">"image segmentation"</span>
+            </div>
+            <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-medium">
+              <span class="material-symbols-outlined text-[13px] text-emerald-600">calendar_today</span>
+              <span id="badge-years">2018–2026</span>
+            </div>
+            <div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-xs">
+              <span class="material-symbols-outlined text-[13px] text-slate-500">hub</span>
+              <span id="badge-source">OpenAlex + Google Scholar</span>
+            </div>
+            <!-- Removable Active Year Filter -->
+            <button onclick="clearYearFilter()" class="hidden group items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-100/70 border border-blue-300 text-blue-900 text-xs hover:bg-blue-100 transition-all" id="active-year-pill">
+              <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+              <span>Filtre: <strong id="active-year-pill-val">2024</strong> (Seçili Yıl)</span>
+              <span class="material-symbols-outlined text-[14px] text-blue-700 group-hover:text-blue-950 transition-colors">close</span>
+            </button>
+          </div>
+
+          <!-- Right: Action Buttons -->
+          <div class="flex items-center gap-space-xs self-end lg:self-auto shrink-0">
+            <button onclick="switchMainTab('arama')" class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-medium text-xs transition-colors shadow-sm" type="button">
+              <span class="material-symbols-outlined text-[15px] text-slate-600">edit</span>
+              <span>Aramayı Düzenle</span>
+            </button>
+            <button onclick="shareCurrentQuery()" class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 font-medium text-xs transition-colors shadow-sm" type="button">
+              <span class="material-symbols-outlined text-[15px] text-slate-600">share</span>
+              <span id="share-btn-label">Paylaş</span>
+            </button>
+            <button onclick="clearYearFilter()" class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-white hover:bg-red-50 border border-slate-300 hover:border-red-300 text-slate-600 hover:text-red-700 font-medium text-xs transition-colors shadow-sm" type="button">
+              <span class="material-symbols-outlined text-[15px]">filter_alt_off</span>
+              <span>Yıl Filtresini Kaldır</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- EMBEDDED STATE 2: LOADING SKELETON -->
+      <div class="hidden max-w-7xl w-full mx-auto px-gutter py-space-md flex-col gap-4" id="preview-loading">
+        <div class="p-6 rounded-lg bg-white border border-slate-200 shadow-sm flex flex-col gap-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 rounded-full border-2 border-blue-600 border-t-transparent animate-spin"></div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-900">Literatür Havuzu ve Makale Özetleri Taranıyor...</h4>
+                <p class="text-xs text-blue-700 font-medium">Yıllık yayın trendi, alt konular ve makale özetleri (abstract) getiriliyor…</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs border border-slate-200">Canlı Akademik Telemetri</span>
+          </div>
+          <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full bg-blue-600 rounded-full transition-all duration-500 animate-pulse" style="width: 78%;"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-2">
+            <div class="h-24 rounded bg-slate-100 animate-pulse"></div>
+            <div class="h-24 rounded bg-slate-100 animate-pulse"></div>
+            <div class="h-24 rounded bg-slate-100 animate-pulse"></div>
+            <div class="h-24 rounded bg-slate-100 animate-pulse"></div>
+          </div>
+          <div class="h-56 rounded bg-slate-50 border border-slate-200 animate-pulse"></div>
+        </div>
+      </div>
+
+      <!-- MAIN DASHBOARD CONTENT AREA -->
+      <div class="w-full max-w-7xl mx-auto px-gutter py-space-md flex flex-col gap-space-lg" id="main-telemetry-view">
+
+        <!-- SECTION 2: 4 METRIC KPI CARDS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- KPI 1 -->
+          <div class="relative overflow-hidden rounded-lg bg-white p-4 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Toplam Yayın Hacmi</span>
+              <span class="w-7 h-7 rounded bg-blue-50 border border-blue-100 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined text-[16px]">menu_book</span>
+              </span>
+            </div>
+            <div class="my-2 flex items-baseline gap-2">
+              <span id="kpi-total-volume" class="text-3xl leading-none text-slate-900 font-bold tracking-tight">—</span>
+              <span id="kpi-total-badge" class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                <span class="material-symbols-outlined text-[13px]">trending_up</span> —
+              </span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+              <span id="kpi-total-sub" class="text-xs text-slate-500">Seçili dönemde kümülatif yayın</span>
+              <svg class="w-16 h-4 text-blue-600 overflow-visible" fill="none" viewBox="0 0 60 16">
+                <path id="kpi-sparkline" d="M 2,13 L 14,11 L 26,8 L 38,5 L 50,2 L 58,1" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="relative overflow-hidden rounded-lg bg-white p-4 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Zirve Yayın Yılı</span>
+              <span class="w-7 h-7 rounded bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-700">
+                <span class="material-symbols-outlined text-[16px]">vertical_align_top</span>
+              </span>
+            </div>
+            <div class="my-2 flex items-baseline gap-2">
+              <span id="kpi-peak-year" class="text-3xl leading-none text-blue-700 font-bold tracking-tight">—</span>
+              <span class="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-semibold uppercase">Zirve</span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+              <span id="kpi-peak-count" class="text-xs text-slate-500">— doğrulanmış araştırma</span>
+              <span class="text-xs font-medium text-blue-700">Rekor Seviye</span>
+            </div>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="relative overflow-hidden rounded-lg bg-white p-4 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Yıllık Ort. Büyüme (CAGR)</span>
+              <span class="w-7 h-7 rounded bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700">
+                <span class="material-symbols-outlined text-[16px]">speed</span>
+              </span>
+            </div>
+            <div class="my-2 flex items-baseline gap-2">
+              <span id="kpi-cagr" class="text-3xl leading-none text-slate-900 font-bold tracking-tight">—</span>
+              <span id="kpi-cagr-badge" class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-semibold">Yıllık İvme</span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+              <span class="text-xs text-slate-500">Yıllık bileşik büyüme oranı</span>
+              <span id="kpi-cagr-label" class="text-xs text-slate-600 font-medium">Trend Analizi</span>
+            </div>
+          </div>
+
+          <!-- KPI 4 -->
+          <div class="relative overflow-hidden rounded-lg bg-white p-4 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Ortalama Atıf (İlk Küme)</span>
+              <span class="w-7 h-7 rounded bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700">
+                <span class="material-symbols-outlined text-[16px]">format_quote</span>
+              </span>
+            </div>
+            <div class="my-2 flex items-baseline gap-2">
+              <span id="kpi-avg-cit" class="text-3xl leading-none text-slate-900 font-bold tracking-tight">—</span>
+              <span class="text-xs text-slate-500 font-normal">atıf / yayın</span>
+            </div>
+            <div class="flex items-center justify-between pt-1 border-t border-slate-100">
+              <span id="kpi-tot-cit" class="text-xs text-slate-500">Listelenen yayınların toplam atıfı</span>
+              <span class="text-xs text-slate-700 font-medium">Akademik Etki</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: MAIN CARD - YILLARA GÖRE YAYIN SAYISI (BAR + LINE CHART) -->
+        <div class="rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col gap-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-2 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                <h2 class="text-lg font-bold text-slate-900 tracking-tight">Yıllara Göre Yayın Hacmi ve Büyüme Trendi</h2>
+              </div>
+              <p id="chart-subtitle" class="text-xs text-slate-500 mt-0.5">Seçili dönem arası literatür yoğunluğu ve yıllık yayın trendi</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 self-start sm:self-auto text-xs">
+              <div class="flex items-center p-0.5 rounded-md bg-slate-100 border border-slate-200">
+                <button onclick="setChartMode('abs')" class="px-2.5 py-1 rounded bg-white text-slate-900 font-semibold shadow-xs transition-all" id="btn-chart-abs">Mutlak Sayı</button>
+                <button onclick="setChartMode('norm')" class="px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all" id="btn-chart-norm">Dönem İçi Pay (%)</button>
+              </div>
+              <button onclick="exportTrendCSV()" class="px-2.5 py-1.5 rounded border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">download</span>
+                <span>Trend CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="relative w-full pt-1 pb-2">
+            <div class="flex flex-wrap items-center justify-between gap-space-sm mb-4 text-xs">
+              <div class="flex items-center gap-4 flex-wrap">
+                <span class="flex items-center gap-1.5 text-slate-700 font-medium">
+                  <span class="w-3 h-3 rounded-xs bg-blue-600"></span> Yayın Sayısı (Bar)
+                </span>
+                <span class="flex items-center gap-1.5 text-sky-700 font-medium">
+                  <span class="w-4 h-0.5 bg-sky-600"></span> Trend Eğrisi (Çizgi)
+                </span>
+                <span class="flex items-center gap-1.5 text-slate-600">
+                  <span class="w-3 h-3 rounded-xs border border-slate-300 bg-[repeating-linear-gradient(45deg,#94a3b8_0,#94a3b8_2px,#f1f5f9_0,#f1f5f9_6px)]"></span> Devam Eden Yıl
+                </span>
+              </div>
+              <div class="flex items-center gap-1 text-slate-500 text-[11px]">
+                <span class="material-symbols-outlined text-[13px]">info</span>
+                <span>Çubuklara tıklayarak alttaki makale tablosunu o yıla filtreleyebilirsiniz.</span>
+              </div>
+            </div>
+
+            <!-- Interactive Combo Chart Container -->
+            <div class="relative w-full h-80 rounded bg-slate-50/70 border border-slate-200 p-4 flex flex-col justify-between">
+              <!-- Background Grid Lines -->
+              <div id="chart-grid-lines" class="absolute inset-x-4 top-4 bottom-10 flex flex-col justify-between pointer-events-none"></div>
+              <!-- Trend Line Overlay (SVG) -->
+              <svg id="chart-svg-overlay" class="absolute inset-x-4 top-4 bottom-10 w-[calc(100%-2rem)] h-[calc(100%-3rem)] pointer-events-none overflow-visible z-10" preserveAspectRatio="none" viewBox="0 0 700 240"></svg>
+              <!-- Bars Flex Grid -->
+              <div id="chart-bars-container" class="relative z-20 w-full h-[calc(100%-1.75rem)] flex items-end justify-between px-2 gap-1.5 sm:gap-3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: TWO ANALYTICAL CARDS (60% / 40%) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <!-- Left Card: Sub-topics Ranking (7 Cols) -->
+          <div class="lg:col-span-7 rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">En Sık Geçen Alt Konular &amp; Yayıncılar</h3>
+                  <p class="text-xs text-slate-500">Arama kümesindeki makalelerle en yüksek korelasyona sahip alt alanlar (Tıklayıp daraltabilirsiniz)</p>
+                </div>
+                <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-600">Konsept &amp; Yayıncı</span>
+              </div>
+              <div id="subtopics-list" class="flex flex-col gap-2.5 mt-2"></div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-slate-500 text-xs">
+              <span>Veri Havuzu: OpenAlex Concept Graph &amp; Yayıncı İndeksi</span>
+              <span id="top-publisher-footer" class="text-blue-700 font-medium"></span>
+            </div>
+          </div>
+
+          <!-- Right Card: Source & Type Donut Chart (5 Cols) -->
+          <div class="lg:col-span-5 rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900">Kaynağa ve Türüne Dağılım</h3>
+                  <p class="text-xs text-slate-500">Yayın mecralarının bibliyografik tipi</p>
+                </div>
+                <span class="w-7 h-7 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600">
+                  <span class="material-symbols-outlined text-[16px]">pie_chart</span>
+                </span>
+              </div>
+              <div class="relative w-full flex items-center justify-center py-2">
+                <svg id="donut-svg" class="w-44 h-44 -rotate-90 transform" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" fill="transparent" r="38" stroke="#f1f5f9" stroke-width="14"></circle>
+                </svg>
+                <div class="absolute flex flex-col items-center justify-center pointer-events-none">
+                  <span id="donut-center-total" class="text-2xl leading-none text-slate-900 font-bold">—</span>
+                  <span class="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5 font-semibold">Kayıt</span>
+                </div>
+              </div>
+              <div id="donut-legend-grid" class="grid grid-cols-2 gap-2 mt-3 text-xs"></div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 text-slate-500 text-[11px] text-center">
+              Veriler OpenAlex Publication Type ontolojisine göre tasnif edilmiştir.
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5: PUBLICATION LIST CARD (LITERATURE EXPLORER WITH FULL ABSTRACTS) -->
+        <div class="rounded-lg bg-white p-5 border border-outline-variant shadow-sm flex flex-col gap-4" id="publications-section">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="text-lg font-bold text-slate-900 tracking-tight">Tüm Çalışmalar (Başlık, Yıl ve Makale Özeti)</h3>
+                <span id="table-total-badge" class="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold">0</span>
+              </div>
+              <p id="table-filter-subtitle" class="text-xs text-slate-500">Seçilen kriterlere ait makalelerin başlığı, yayın yılı ve tam özeti (abstract)</p>
+            </div>
+
+            <!-- Filters & Actions -->
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="relative min-w-[220px] flex-1 sm:flex-initial">
+                <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[16px]">search</span>
+                <input id="local-table-search" oninput="renderArticlesTable()"
+                  class="w-full pl-8 pr-3 py-1.5 rounded border border-slate-300 bg-white text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Başlık, yazar veya özet içinde ara..." type="text" />
+              </div>
+
+              <!-- Year Dropdown -->
+              <div class="relative">
+                <select id="table-year-select" onchange="filterByYear(this.value)"
+                  class="appearance-none pl-2.5 pr-7 py-1.5 rounded border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="all">Tüm Yıllar</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-[14px] pointer-events-none">expand_more</span>
+              </div>
+
+              <!-- Sort Dropdown -->
+              <div class="relative">
+                <select id="table-sort-select" onchange="changeSortOrder(this.value)"
+                  class="appearance-none pl-2.5 pr-7 py-1.5 rounded border border-slate-300 bg-white text-slate-800 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer">
+                  <option value="cited_by_count:desc">Atıfa göre (Yüksekten düşüğe)</option>
+                  <option value="publication_year:desc">Yıla göre en yeni</option>
+                  <option value="relevance_score:desc">İlgi düzeyine göre (Alaka)</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 text-[14px] pointer-events-none">swap_vert</span>
+              </div>
+
+              <!-- CSV Download Button -->
+              <button onclick="exportArticlesCSV()" class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all shadow-xs" type="button">
+                <span class="material-symbols-outlined text-[15px]">download</span>
+                <span>CSV İndir (Özet Dahil)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- High-Density Responsive Table (Google Scholar / Academic Layout with Abstracts) -->
+          <div class="w-full overflow-x-auto rounded border border-slate-200">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3.5 min-w-[420px]" scope="col">Başlık, Makale Özeti (Abstract) &amp; DOI</th>
+                  <th class="py-2.5 px-3 min-w-[160px]" scope="col">Yazarlar</th>
+                  <th class="py-2.5 px-2 text-center" scope="col">Yıl</th>
+                  <th class="py-2.5 px-3 min-w-[150px]" scope="col">Dergi / Yayıncı</th>
+                  <th class="py-2.5 px-2 text-center" scope="col">Atıf</th>
+                  <th class="py-2.5 px-3 text-right" scope="col">Bağlantı</th>
+                </tr>
+              </thead>
+              <tbody id="articles-tbody" class="divide-y divide-slate-200 text-slate-900 bg-white"></tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer & Pagination -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-space-sm pt-2 text-xs text-slate-600">
+            <span id="pagination-info-text">Sonuçlar yükleniyor...</span>
+            <div id="pagination-buttons" class="flex items-center gap-1"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="w-full bg-white border-t border-slate-200 mt-auto">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div class="flex items-center gap-2 flex-wrap justify-center">
+        <span class="uppercase font-mono text-slate-400 font-medium">Veri Sağlayıcılar:</span>
+        <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-slate-700">OpenAlex API</span>
+        <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 font-mono text-slate-700">Google Akademik</span>
+      </div>
+      <div class="flex items-center gap-2 font-mono">
+        <span>© 2026 Akademik Trend Radarı. Tüm hakları saklıdır.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===================================================================== -->
+  <!-- CANLI AKADEMİK ARAMA, ÖZET ÇÖZÜMLEME VE TREND MOTORU (JAVASCRIPT)     -->
+  <!-- ===================================================================== -->
+  <script>
+    const PUBLISHERS_MAP = {
+      "Elsevier": "P4310320990",
+      "Taylor & Francis": "P4310320547",
+      "Springer Nature": "P4310319965",
+      "IEEE": "P4310319808",
+      "Wiley": "P4310320595",
+      "MDPI": "P4310310987"
+    };
+
+    let state = {
+      orTerms: ["fuzzy clustering", "fuzzy c-means"],
+      andTerms: ["image segmentation"],
+      minYear: 2018,
+      maxYear: 2026,
+      publisher: "all",
+      sourceLabel: "OpenAlex + Google Scholar",
+      selectedYearFilter: "all",
+      sortBy: "cited_by_count:desc",
+      chartMode: "abs", // 'abs' or 'norm'
+      page: 1,
+      perPage: 25,
+      totalWorksCount: 0,
+      yearlyCounts: {},
+      conceptsCounts: [],
+      typeCounts: [],
+      articles: []
+    };
+
+    // ===================== SEKME GEÇİŞİ (ARAMA <-> KEŞFET) =====================
+    function switchMainTab(tabName) {
+      const viewArama = document.getElementById("view-arama");
+      const viewKesfet = document.getElementById("view-kesfet");
+      const btnArama = document.getElementById("nav-btn-arama");
+      const btnKesfet = document.getElementById("nav-btn-kesfet");
+
+      if (tabName === "arama") {
+        viewArama.classList.remove("hidden");
+        viewArama.classList.add("flex");
+        viewKesfet.classList.add("hidden");
+        viewKesfet.classList.remove("flex");
+
+        btnArama.className = "px-4 py-1.5 rounded-md bg-white text-slate-900 shadow-sm border border-slate-200/60 font-semibold transition-all";
+        btnKesfet.className = "px-4 py-1.5 rounded-md text-slate-600 transition-colors hover:text-slate-900 hover:bg-slate-200/60";
+      } else {
+        viewArama.classList.add("hidden");
+        viewArama.classList.remove("flex");
+        viewKesfet.classList.remove("hidden");
+        viewKesfet.classList.add("flex");
+
+        btnKesfet.className = "px-4 py-1.5 rounded-md bg-white text-slate-900 shadow-sm border border-slate-200/60 font-semibold transition-all";
+        btnArama.className = "px-4 py-1.5 rounded-md text-slate-600 transition-colors hover:text-slate-900 hover:bg-slate-200/60";
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ===================== CHIP (ANAHTAR KELİME) YÖNETİMİ =====================
+    function handleChipKeydown(event, inputEl, containerId, themeVariant) {
+      if (event.key === "Enter" || event.key === ",") {
+        event.preventDefault();
+        addChip(inputEl, containerId, themeVariant);
+      }
+    }
+
+    function addChip(inputEl, containerId, themeVariant, customValue) {
+      const raw = customValue !== undefined ? customValue : inputEl.value;
+      const parts = raw.split(",").map(s => s.trim()).filter(Boolean);
+      if (!parts.length) return;
+
+      const container = document.getElementById(containerId);
+      const isPrimary = themeVariant === "primary";
+
+      parts.forEach(val => {
+        const chip = document.createElement("span");
+        chip.setAttribute("data-chip-val", val);
+        chip.className = `chip-item inline-flex items-center gap-1.5 px-2.5 py-1 rounded ${
+          isPrimary ? "bg-blue-50 border border-blue-200 text-blue-900" : "bg-slate-100 border border-slate-300 text-slate-800"
+        } text-xs font-medium`;
+
+        const safe = val.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        chip.innerHTML = `
+          <span class="w-1.5 h-1.5 rounded-full ${isPrimary ? "bg-[#1a73e8]" : "bg-slate-500"}"></span>
+          <span class="chip-text">${safe}</span>
+          <button type="button" aria-label="Kaldır" onclick="this.parentElement.remove()" class="${
+            isPrimary ? "text-blue-500" : "text-slate-500"
+          } hover:text-red-600 transition-colors ml-0.5 inline-flex items-center">
+            <span class="material-symbols-outlined text-[14px]">close</span>
+          </button>
+        `;
+        container.insertBefore(chip, inputEl);
+      });
+
+      if (customValue === undefined) inputEl.value = "";
+    }
+
+    function readChipsFromContainer(containerId, inputId) {
+      const container = document.getElementById(containerId);
+      const inputEl = document.getElementById(inputId);
+      if (inputEl && inputEl.value.trim()) {
+        addChip(inputEl, containerId, containerId === "or-chips-container" ? "primary" : "secondary");
+      }
+      return Array.from(container.querySelectorAll(".chip-item")).map(el => el.getAttribute("data-chip-val") || el.querySelector(".chip-text")?.textContent.trim()).filter(Boolean);
+    }
+
+    function setQuickYears(minY, maxY) {
+      document.getElementById("input-year-min").value = minY;
+      document.getElementById("input-year-max").value = maxY;
+      syncYearSliders();
+    }
+
+    function syncYearSliders() {
+      let minY = parseInt(document.getElementById("input-year-min").value) || 2018;
+      let maxY = parseInt(document.getElementById("input-year-max").value) || 2026;
+      if (minY > maxY) {
+        const tmp = minY;
+        minY = maxY;
+        maxY = tmp;
+      }
+      state.minYear = minY;
+      state.maxYear = maxY;
+    }
+
+    function selectSource(btn) {
+      document.querySelectorAll(".source-option-btn").forEach(b => {
+        b.classList.remove("border-[#1a73e8]", "text-slate-900");
+        b.classList.add("border-slate-200", "text-slate-700");
+      });
+      btn.classList.add("border-[#1a73e8]", "text-slate-900");
+      btn.classList.remove("border-slate-200");
+      state.sourceLabel = btn.getAttribute("data-source") || "OpenAlex + Google Scholar";
+    }
+
+    function resetFilters() {
+      const orContainer = document.getElementById("or-chips-container");
+      const andContainer = document.getElementById("and-chips-container");
+      orContainer.querySelectorAll(".chip-item").forEach(c => c.remove());
+      andContainer.querySelectorAll(".chip-item").forEach(c => c.remove());
+      document.getElementById("primary-keywords-input").value = "";
+      document.getElementById("secondary-keywords-input").value = "";
+      document.getElementById("publisher-filter-select").value = "all";
+      setQuickYears(2018, 2026);
+    }
+
+    function runPresetSearch(orList, andList, minY, maxY) {
+      resetFilters();
+      const orInput = document.getElementById("primary-keywords-input");
+      const andInput = document.getElementById("secondary-keywords-input");
+      orList.forEach(t => addChip(orInput, "or-chips-container", "primary", t));
+      andList.forEach(t => addChip(andInput, "and-chips-container", "secondary", t));
+      setQuickYears(minY, maxY);
+      triggerSearchFromForm();
+    }
+
+    // ===================== SORGULAMA VE ANALİZ MOTORU =====================
+    function buildBooleanQuery() {
+      const formatGroup = (arr) => {
+        const quoted = arr.map(k => k.includes(" ") ? `"${k}"` : k);
+        return quoted.length > 1 ? `(${quoted.join(" OR ")})` : (quoted[0] || "");
+      };
+      const parts = [];
+      if (state.orTerms.length) parts.push(formatGroup(state.orTerms));
+      if (state.andTerms.length) parts.push(formatGroup(state.andTerms));
+      return parts.join(" AND ");
+    }
+
+    async function triggerSearchFromForm() {
+      const orTerms = readChipsFromContainer("or-chips-container", "primary-keywords-input");
+      const andTerms = readChipsFromContainer("and-chips-container", "secondary-keywords-input");
+      syncYearSliders();
+      const publisher = document.getElementById("publisher-filter-select").value;
+
+      if (!orTerms.length) {
+        alert("Lütfen en az bir ana anahtar kelime yazıp Enter'a basın.");
+        document.getElementById("primary-keywords-input").focus();
+        return;
+      }
+
+      state.orTerms = orTerms;
+      state.andTerms = andTerms;
+      state.publisher = publisher;
+      state.selectedYearFilter = "all";
+      state.page = 1;
+
+      switchMainTab("kesfet");
+      await executeFullAnalysis();
+    }
+
+    async function executeFullAnalysis() {
+      const loadingEl = document.getElementById("preview-loading");
+      const mainViewEl = document.getElementById("main-telemetry-view");
+
+      loadingEl.classList.remove("hidden");
+      loadingEl.classList.add("flex");
+      mainViewEl.classList.add("opacity-40", "pointer-events-none");
+
+      updateStickyBadges();
+
+      const query = buildBooleanQuery();
+      const scholarQuery = encodeURIComponent(query + (state.publisher !== "all" ? ` "${state.publisher}"` : ""));
+      document.getElementById("header-scholar-link").href =
+        `https://scholar.google.com/scholar?q=${scholarQuery}&as_ylo=${state.minYear}&as_yhi=${state.maxYear}&hl=tr`;
+
+      try {
+        const pubLineageFilter = state.publisher !== "all" && PUBLISHERS_MAP[state.publisher]
+          ? `,primary_location.source.host_organization_lineage:${PUBLISHERS_MAP[state.publisher]}`
+          : "";
+
+        const rangeFilter = `publication_year:${state.minYear}-${state.maxYear}${pubLineageFilter}`;
+        const activeYearRange = state.selectedYearFilter !== "all"
+          ? `publication_year:${state.selectedYearFilter}${pubLineageFilter}`
+          : rangeFilter;
+
+        // Paralel API istekleri:
+        // 1) Yıllara göre yayın sayısı
+        const urlYearly = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=publication_year`;
+        // 2) En sık geçen alt konular (concepts)
+        const urlConcepts = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=concepts.id`;
+        // 3) Yayın türüne göre dağılım (article, proceedings, preprint, book-chapter)
+        const urlTypes = `https://api.openalex.org/works?filter=${encodeURIComponent(rangeFilter)}&search=${encodeURIComponent(query)}&group_by=type`;
+        // 4) Makaleler (Başlık, Yıl, Tam Özet, Yazarlar, Dergi/Yayıncı, Atıf)
+        const urlWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(query)}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+
+        const [resYearly, resConcepts, resTypes, resWorks] = await Promise.all([
+          fetch(urlYearly).then(r => r.json()),
+          fetch(urlConcepts).then(r => r.json()),
+          fetch(urlTypes).then(r => r.json()),
+          fetch(urlWorks).then(r => r.json())
+        ]);
+
+        // Yıllık sayıları kaydet
+        state.yearlyCounts = {};
+        for (let y = state.minYear; y <= state.maxYear; y++) state.yearlyCounts[y] = 0;
+        (resYearly.group_by || []).forEach(g => {
+          const y = parseInt(g.key);
+          if (state.yearlyCounts[y] !== undefined) state.yearlyCounts[y] = g.count;
+        });
+
+        state.conceptsCounts = (resConcepts.group_by || []).slice(0, 8);
+        state.typeCounts = resTypes.group_by || [];
+        state.totalWorksCount = resWorks.meta?.count || Object.values(state.yearlyCounts).reduce((a, b) => a + b, 0);
+        state.articles = (resWorks.results || []).map(parseOpenAlexWork);
+
+        populateYearDropdown();
+        renderKPIs();
+        renderComboChart();
+        renderSubtopics();
+        renderDonutChart();
+        renderArticlesTable();
+      } catch (err) {
+        console.error("Analiz hatası:", err);
+      } finally {
+        loadingEl.classList.add("hidden");
+        loadingEl.classList.remove("flex");
+        mainViewEl.classList.remove("opacity-40", "pointer-events-none");
+      }
+    }
+
+    async function fetchWorksOnly() {
+      const query = buildBooleanQuery();
+      const pubLineageFilter = state.publisher !== "all" && PUBLISHERS_MAP[state.publisher]
+        ? `,primary_location.source.host_organization_lineage:${PUBLISHERS_MAP[state.publisher]}`
+        : "";
+      const activeYearRange = state.selectedYearFilter !== "all"
+        ? `publication_year:${state.selectedYearFilter}${pubLineageFilter}`
+        : `publication_year:${state.minYear}-${state.maxYear}${pubLineageFilter}`;
+
+      const tbody = document.getElementById("articles-tbody");
+      tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500">Makaleler ve özetler yükleniyor...</td></tr>`;
+
+      const urlWorks = `https://api.openalex.org/works?filter=${encodeURIComponent(activeYearRange)}&search=${encodeURIComponent(query)}&per-page=${state.perPage}&page=${state.page}&sort=${encodeURIComponent(state.sortBy)}`;
+      const resWorks = await fetch(urlWorks).then(r => r.json());
+      state.totalWorksCount = resWorks.meta?.count || 0;
+      state.articles = (resWorks.results || []).map(parseOpenAlexWork);
+      renderArticlesTable();
+    }
+
+    // ===================== MAKALE ÖZETİ (ABSTRACT) ÇÖZÜMLEYİCİ =====================
+    function decodeInvertedIndex(invIdx) {
+      if (!invIdx || typeof invIdx !== "object") return "";
+      const words = [];
+      for (const [word, positions] of Object.entries(invIdx)) {
+        for (const pos of positions) {
+          words[pos] = word;
+        }
+      }
+      return words.filter(Boolean).join(" ");
+    }
+
+    function parseOpenAlexWork(w) {
+      const abstractText = decodeInvertedIndex(w.abstract_inverted_index);
+      const authorsList = (w.authorships || [])
+        .slice(0, 4)
+        .map(a => a.author?.display_name)
+        .filter(Boolean);
+      const authorsStr = authorsList.join(", ") + ((w.authorships || []).length > 4 ? " et al." : "");
+
+      const loc = w.primary_location || {};
+      const src = loc.source || {};
+      const journal = src.display_name || "Akademik Yayın";
+      const publisher = src.host_organization_name || "";
+      const doiClean = w.doi ? w.doi.replace("https://doi.org/", "") : "";
+      const title = w.title || "Başlıksız Çalışma";
+      const scholarUrl = `https://scholar.google.com/scholar?q=${encodeURIComponent('"' + title + '"')}&hl=tr`;
+
+      return {
+        id: w.id,
+        title: title,
+        year: w.publication_year || "—",
+        abstract: abstractText || "Bu çalışma için açık özet metni yayıncı tarafından paylaşılmamıştır. Sağdaki Google Akademik bağlantısından makale özetini inceleyebilirsiniz.",
+        hasRealAbstract: Boolean(abstractText),
+        authors: authorsStr || "Yazar bilgisi belirtilmemiş",
+        journal: journal,
+        publisher: publisher,
+        isOpenAccess: Boolean(w.open_access?.is_oa),
+        oaUrl: w.open_access?.oa_url || null,
+        doi: doiClean,
+        url: w.doi || loc.landing_page_url || scholarUrl,
+        scholarUrl: scholarUrl,
+        citations: w.cited_by_count || 0
+      };
+    }
+
+    function highlightKeywords(text) {
+      if (!text) return "";
+      let safe = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const terms = [...state.orTerms, ...state.andTerms]
+        .filter(t => t && t.length > 2)
+        .sort((a, b) => b.length - a.length);
+      terms.forEach(term => {
+        const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const rx = new RegExp(`(${escaped})`, "gi");
+        safe = safe.replace(rx, '<mark class="kw-highlight">$1</mark>');
+      });
+      return safe;
+    }
+
+    // ===================== ÜST BİLGİ BANTLARI VE KPI KARTLARI =====================
+    function updateStickyBadges() {
+      document.getElementById("badge-or-terms").textContent = state.orTerms.map(t => `"${t}"`).join(", ");
+      const andWrap = document.getElementById("badge-and-wrapper");
+      if (state.andTerms.length) {
+        andWrap.classList.remove("hidden");
+        andWrap.classList.add("flex");
+        document.getElementById("badge-and-terms").textContent = state.andTerms.map(t => `"${t}"`).join(", ");
+      } else {
+        andWrap.classList.add("hidden");
+      }
+      document.getElementById("badge-years").textContent = `${state.minYear}–${state.maxYear}`;
+      document.getElementById("badge-source").textContent =
+        state.publisher !== "all" ? `${state.publisher} (${state.sourceLabel})` : state.sourceLabel;
+
+      const yearPill = document.getElementById("active-year-pill");
+      if (state.selectedYearFilter !== "all") {
+        yearPill.classList.remove("hidden");
+        yearPill.classList.add("flex");
+        document.getElementById("active-year-pill-val").textContent = state.selectedYearFilter;
+      } else {
+        yearPill.classList.add("hidden");
+        yearPill.classList.remove("flex");
+      }
+    }
+
+    function renderKPIs() {
+      const years = Object.keys(state.yearlyCounts).map(Number).sort((a, b) => a - b);
+      const totalAllYears = years.reduce((acc, y) => acc + (state.yearlyCounts[y] || 0), 0);
+
+      document.getElementById("kpi-total-volume").textContent = totalAllYears.toLocaleString("tr-TR");
+      document.getElementById("kpi-total-sub").textContent = `${state.minYear}–${state.maxYear} arası toplam yayın`;
+
+      // Zirve Yıl
+      let peakY = years[0] || "—";
+      let peakC = -1;
+      years.forEach(y => {
+        if ((state.yearlyCounts[y] || 0) > peakC) {
+          peakC = state.yearlyCounts[y] || 0;
+          peakY = y;
+        }
+      });
+      document.getElementById("kpi-peak-year").textContent = peakY;
+      document.getElementById("kpi-peak-count").textContent = `${Math.max(0, peakC).toLocaleString("tr-TR")} doğrulanmış araştırma`;
+
+      // Büyüme & CAGR (Tamamlanmış yılları baz al: 2026 devam ediyorsa bir önceki yıla veya son yıla bak)
+      const currentCalendarYear = new Date().getFullYear();
+      const completedYears = years.filter(y => y < currentCalendarYear);
+      const startY = years[0];
+      const endY = completedYears.length ? completedYears[completedYears.length - 1] : years[years.length - 1];
+      const startVal = state.yearlyCounts[startY] || 0;
+      const endVal = state.yearlyCounts[endY] || 0;
+      const nYears = Math.max(1, endY - startY);
+
+      if (startVal > 0 && endVal > 0) {
+        const totalGrowthPct = (((endVal - startVal) / startVal) * 100).toFixed(1);
+        const cagr = ((Math.pow(endVal / startVal, 1 / nYears) - 1) * 100).toFixed(1);
+        const sign = totalGrowthPct >= 0 ? "+" : "";
+        document.getElementById("kpi-total-badge").innerHTML =
+          `<span class="material-symbols-outlined text-[13px]">${totalGrowthPct >= 0 ? "trending_up" : "trending_down"}</span> ${sign}%${totalGrowthPct}`;
+        document.getElementById("kpi-cagr").textContent = `${cagr >= 0 ? "+" : ""}%${cagr}`;
+        document.getElementById("kpi-cagr-badge").textContent = cagr >= 0 ? "Pozitif İvme" : "Daralma";
+      } else {
+        document.getElementById("kpi-total-badge").textContent = "Yeni Alan";
+        document.getElementById("kpi-cagr").textContent = "—";
+      }
+
+      // Ortalama Atıf
+      const citSum = state.articles.reduce((acc, a) => acc + (a.citations || 0), 0);
+      const avgCit = state.articles.length ? (citSum / state.articles.length).toFixed(1) : "0.0";
+      document.getElementById("kpi-avg-cit").textContent = avgCit;
+      document.getElementById("kpi-tot-cit").textContent = `İlk ${state.articles.length} yayında toplam ${citSum.toLocaleString("tr-TR")} atıf`;
+    }
+
+    // ===================== YILLARA GÖRE COMBO GRAFİK (BAR + SVG LINE) =====================
+    function setChartMode(mode) {
+      state.chartMode = mode;
+      const btnAbs = document.getElementById("btn-chart-abs");
+      const btnNorm = document.getElementById("btn-chart-norm");
+      if (mode === "abs") {
+        btnAbs.className = "px-2.5 py-1 rounded bg-white text-slate-900 font-semibold shadow-xs transition-all";
+        btnNorm.className = "px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all";
+      } else {
+        btnNorm.className = "px-2.5 py-1 rounded bg-white text-slate-900 font-semibold shadow-xs transition-all";
+        btnAbs.className = "px-2.5 py-1 rounded text-slate-600 hover:text-slate-900 font-medium transition-all";
+      }
+      renderComboChart();
+    }
+
+    function renderComboChart() {
+      const years = Object.keys(state.yearlyCounts).map(Number).sort((a, b) => a - b);
+      const totalSum = Math.max(1, years.reduce((a, y) => a + (state.yearlyCounts[y] || 0), 0));
+      const values = years.map(y => {
+        const raw = state.yearlyCounts[y] || 0;
+        return state.chartMode === "norm" ? Number(((raw / totalSum) * 100).toFixed(1)) : raw;
+      });
+
+      const maxVal = Math.max(1, ...values);
+      const niceMax = state.chartMode === "norm" ? Math.ceil(maxVal / 5) * 5 || 10 : Math.ceil(maxVal * 1.15);
+
+      document.getElementById("chart-subtitle").textContent =
+        `${state.minYear}–${state.maxYear} arası yıllık makale üretimi (${state.publisher === "all" ? "Tüm Yayıncılar" : state.publisher})`;
+
+      // Grid lines
+      const gridEl = document.getElementById("chart-grid-lines");
+      const steps = [1, 0.75, 0.5, 0.25, 0];
+      gridEl.innerHTML = steps.map(s => {
+        const labelVal = state.chartMode === "norm"
+          ? `%${(niceMax * s).toFixed(0)}`
+          : Math.round(niceMax * s).toLocaleString("tr-TR");
+        return `<div class="w-full flex items-center justify-between">
+          <div class="w-full border-t ${s === 0 ? "border-slate-300" : "border-slate-200"}"></div>
+          <span class="text-[10px] text-slate-400 pl-2">${labelVal}</span>
+        </div>`;
+      }).join("");
+
+      // SVG Line Overlay
+      const svgEl = document.getElementById("chart-svg-overlay");
+      if (years.length > 1) {
+        const pts = values.map((v, i) => {
+          const x = ((i + 0.5) / years.length) * 700;
+          const y = 240 - Math.min(230, (v / niceMax) * 225);
+          return { x, y };
+        });
+        const pathD = pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+        const circles = pts.map(p =>
+          `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" fill="#ffffff" r="3.5" stroke="#0284c7" stroke-width="2"></circle>`
+        ).join("");
+        svgEl.innerHTML = `<path d="${pathD}" fill="none" stroke="#0284c7" stroke-width="2"></path>${circles}`;
+      } else {
+        svgEl.innerHTML = "";
+      }
+
+      // Bars
+      const barsEl = document.getElementById("chart-bars-container");
+      const currentYear = new Date().getFullYear();
+
+      barsEl.innerHTML = years.map((y, i) => {
+        const val = values[i];
+        const pctHeight = Math.max(4, Math.min(96, Math.round((val / niceMax) * 95)));
+        const isSelected = String(state.selectedYearFilter) === String(y);
+        const isOngoing = y >= currentYear;
+        const formattedVal = state.chartMode === "norm" ? `%${val}` : val.toLocaleString("tr-TR");
+
+        const barStyleClass = isSelected
+          ? "bg-blue-600 shadow-xs"
+          : isOngoing
+          ? "border border-slate-300 bg-[repeating-linear-gradient(45deg,#cbd5e1_0,#cbd5e1_2px,#f8fafc_0,#f8fafc_8px)] group-hover:border-blue-400"
+          : "bg-slate-300 group-hover:bg-blue-400";
+
+        return `
+          <div class="flex-1 flex flex-col items-center group cursor-pointer h-full justify-end" onclick="filterByYear('${y}')">
+            <span class="${isSelected ? "opacity-100 font-bold text-blue-700" : "opacity-85 group-hover:opacity-100 text-slate-700"} transition-opacity text-[11px] font-medium mb-1">
+              ${formattedVal}${isOngoing ? "*" : ""}
+            </span>
+            <div class="w-full max-w-[52px] rounded-t transition-all duration-200 relative ${barStyleClass}" style="height: ${pctHeight}%;"></div>
+            <span class="text-xs ${isSelected ? "font-bold text-blue-700" : "text-slate-600 font-medium"} mt-2 group-hover:text-blue-700 transition-colors">
+              ${y}${isOngoing ? "*" : ""}
+            </span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ===================== ALT KONULAR VE TÜR DAĞILIMI =====================
+    function renderSubtopics() {
+      const container = document.getElementById("subtopics-list");
+      const items = state.conceptsCounts.slice(0, 8);
+      if (!items.length) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-4">Alt konu verisi bulunamadı.</p>`;
+        return;
+      }
+      const maxCount = Math.max(1, items[0].count);
+      const colors = ["bg-blue-600", "bg-sky-600", "bg-teal-600", "bg-indigo-500", "bg-slate-400", "bg-slate-400", "bg-slate-400", "bg-slate-300"];
+
+      container.innerHTML = items.map((item, idx) => {
+        const pct = Math.min(100, Math.round((item.count / maxCount) * 100));
+        const name = item.key_display_name || "Akademik Konsept";
+        return `
+          <div class="flex flex-col gap-1 cursor-pointer group" onclick="addSubtopicFilter('${name.replace(/'/g, "\\'")}')">
+            <div class="flex justify-between items-center text-xs">
+              <span class="text-slate-800 font-medium group-hover:text-[#1a73e8] transition-colors">${idx + 1}. ${name}</span>
+              <span class="text-blue-700 font-semibold">${item.count.toLocaleString("tr-TR")} <span class="text-slate-400 font-normal">yayın</span></span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div class="h-full ${colors[idx] || "bg-slate-400"} rounded-full" style="width: ${pct}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function addSubtopicFilter(topicName) {
+      if (!state.andTerms.includes(topicName)) {
+        const andInput = document.getElementById("secondary-keywords-input");
+        addChip(andInput, "and-chips-container", "secondary", topicName);
+        state.andTerms.push(topicName);
+        state.page = 1;
+        executeFullAnalysis();
+      }
+    }
+
+    function renderDonutChart() {
+      const total = Math.max(1, state.typeCounts.reduce((a, b) => a + b.count, 0));
+      const grandTotal = Object.values(state.yearlyCounts).reduce((a, b) => a + b, 0);
+      document.getElementById("donut-center-total").textContent =
+        grandTotal >= 1000 ? `${(grandTotal / 1000).toFixed(1)}k` : grandTotal.toLocaleString("tr-TR");
+
+      const topTypes = state.typeCounts.slice(0, 4);
+      const strokeColors = ["#2563eb", "#0ea5e9", "#14b8a6", "#94a3b8"];
+      const badgeColors = ["bg-blue-600", "bg-sky-500", "bg-teal-500", "bg-slate-400"];
+      const typeNamesTR = {
+        "article": "Makale (Dergi)",
+        "book-chapter": "Kitap Bölümü",
+        "preprint": "Ön Baskı (arXiv)",
+        "proceedings-article": "Konferans",
+        "review": "Derleme",
+        "dataset": "Veri Seti"
+      };
+
+      const circumference = 2 * Math.PI * 38; // ~238.76
+      let currentOffset = 0;
+      const circlesHtml = [`<circle cx="50" cy="50" fill="transparent" r="38" stroke="#f1f5f9" stroke-width="14"></circle>`];
+
+      topTypes.forEach((t, i) => {
+        const frac = t.count / total;
+        const dash = (frac * circumference).toFixed(1);
+        circlesHtml.push(
+          `<circle cx="50" cy="50" fill="transparent" r="38" stroke="${strokeColors[i]}" stroke-dasharray="${dash} ${circumference.toFixed(1)}" stroke-dashoffset="${(-currentOffset).toFixed(1)}" stroke-width="14"></circle>`
+        );
+        currentOffset += parseFloat(dash);
+      });
+
+      document.getElementById("donut-svg").innerHTML = circlesHtml.join("");
+
+      const legendEl = document.getElementById("donut-legend-grid");
+      legendEl.innerHTML = topTypes.map((t, i) => {
+        const pct = Math.round((t.count / total) * 100);
+        const label = typeNamesTR[t.key] || t.key_display_name || t.key;
+        return `
+          <div class="flex items-center gap-2 p-2 rounded bg-slate-50 border border-slate-200/70">
+            <span class="w-3 h-3 rounded-full ${badgeColors[i]} shrink-0"></span>
+            <div class="flex flex-col min-w-0">
+              <span class="text-slate-800 font-semibold truncate">%${pct} ${label}</span>
+              <span class="text-[11px] text-slate-500">${t.count.toLocaleString("tr-TR")} kayıt</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // ===================== MAKALE TABLOSU (BAŞLIK, YIL, TAM ÖZET) =====================
+    function populateYearDropdown() {
+      const sel = document.getElementById("table-year-select");
+      const years = Object.keys(state.yearlyCounts).map(Number).sort((a, b) => b - a);
+      sel.innerHTML = `<option value="all" ${state.selectedYearFilter === "all" ? "selected" : ""}>Tüm Yıllar (${state.minYear}–${state.maxYear})</option>` +
+        years.map(y => `<option value="${y}" ${String(state.selectedYearFilter) === String(y) ? "selected" : ""}>Yıl: ${y} (${(state.yearlyCounts[y] || 0).toLocaleString("tr-TR")})</option>`).join("");
+    }
+
+    function filterByYear(yearVal) {
+      state.selectedYearFilter = String(yearVal);
+      state.page = 1;
+      updateStickyBadges();
+      populateYearDropdown();
+      renderComboChart();
+      fetchWorksOnly();
+    }
+
+    function clearYearFilter() {
+      if (state.selectedYearFilter !== "all") {
+        filterByYear("all");
+      }
+    }
+
+    function changeSortOrder(sortVal) {
+      state.sortBy = sortVal;
+      state.page = 1;
+      fetchWorksOnly();
+    }
+
+    function renderArticlesTable() {
+      const tbody = document.getElementById("articles-tbody");
+      const searchVal = (document.getElementById("local-table-search").value || "").toLowerCase().trim();
+
+      const filtered = state.articles.filter(a => {
+        if (!searchVal) return true;
+        return (a.title || "").toLowerCase().includes(searchVal) ||
+               (a.abstract || "").toLowerCase().includes(searchVal) ||
+               (a.authors || "").toLowerCase().includes(searchVal) ||
+               (a.journal || "").toLowerCase().includes(searchVal);
+      });
+
+      document.getElementById("table-total-badge").textContent = state.totalWorksCount.toLocaleString("tr-TR");
+      document.getElementById("table-filter-subtitle").textContent =
+        state.selectedYearFilter === "all"
+          ? `${state.minYear}–${state.maxYear} yılları arasındaki yayınların başlığı, yılı ve tam özeti gösteriliyor`
+          : `${state.selectedYearFilter} yılına ait yayınların başlığı, yılı ve tam özeti filtrelendi`;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-10 text-center text-slate-500">
+              Bu kriterlere uygun çalışma bulunamadı. Anahtar kelimeleri veya yıl filtresini genişletin.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((art, idx) => {
+        const hlTitle = highlightKeywords(art.title);
+        const hlAbstract = highlightKeywords(art.abstract);
+        return `
+          <tr class="hover:bg-blue-50/40 transition-colors align-top">
+            <td class="py-3.5 px-3.5">
+              <div class="flex flex-col gap-1.5">
+                <a class="text-[0.925rem] text-[#1a0dab] hover:underline font-semibold leading-snug" href="${art.url}" target="_blank" rel="noopener">
+                  ${hlTitle}
+                </a>
+                <!-- MAKALE ÖZETİ (ABSTRACT) KUTUSU -->
+                <div class="bg-slate-50/90 border border-slate-200/80 rounded p-2.5 text-xs text-slate-700 leading-relaxed">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px] text-[#1a73e8]">description</span>
+                      Makale Özeti (Abstract)
+                    </span>
+                    <button type="button" onclick="toggleAbstractRow(${idx})" id="abs-btn-${idx}" class="text-[11px] text-[#1a73e8] hover:underline font-medium">
+                      Tamamını Göster / Daralt
+                    </button>
+                  </div>
+                  <p id="abs-text-${idx}" class="line-clamp-2 text-slate-700">${hlAbstract}</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap text-[11px] pt-0.5">
+                  ${art.isOpenAccess
+                    ? `<span class="px-1.5 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium">Açık Erişim (Open Access)</span>`
+                    : `<span class="px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-600">Hakemli Yayın</span>`}
+                  ${art.doi ? `<span class="text-slate-500 font-mono">DOI: ${art.doi}</span>` : ""}
+                  <a href="${art.scholarUrl}" target="_blank" rel="noopener" class="text-[#1a73e8] hover:underline font-medium inline-flex items-center gap-0.5">
+                    <span>Google Akademik'te Gör</span>
+                    <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+                  </a>
+                  ${art.oaUrl ? `<a href="${art.oaUrl}" target="_blank" rel="noopener" class="px-1.5 py-0.5 rounded bg-blue-50 border border-blue-200 text-[#1a73e8] font-bold">[PDF]</a>` : ""}
+                </div>
+              </div>
+            </td>
+            <td class="py-3.5 px-3 text-emerald-800 font-medium leading-snug">
+              ${art.authors}
+            </td>
+            <td class="py-3.5 px-2 text-center font-bold text-slate-800">
+              ${art.year}
+            </td>
+            <td class="py-3.5 px-3">
+              <div class="flex flex-col">
+                <span class="font-medium text-slate-800 italic">${art.journal}</span>
+                <span class="text-[11px] text-slate-500">${art.publisher || "Akademik İndeks"}</span>
+              </div>
+            </td>
+            <td class="py-3.5 px-2 text-center">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-bold">
+                ${art.citations.toLocaleString("tr-TR")}
+              </span>
+            </td>
+            <td class="py-3.5 px-3 text-right">
+              <a class="p-1.5 rounded text-slate-500 hover:text-blue-700 hover:bg-slate-100 transition-colors inline-block" href="${art.url}" rel="noopener" target="_blank" title="Makaleyi Aç">
+                <span class="material-symbols-outlined text-[17px]">open_in_new</span>
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      renderPagination();
+    }
+
+    function toggleAbstractRow(idx) {
+      const p = document.getElementById(`abs-text-${idx}`);
+      if (p) p.classList.toggle("line-clamp-2");
+    }
+
+    function renderPagination() {
+      const totalPages = Math.max(1, Math.min(400, Math.ceil(state.totalWorksCount / state.perPage)));
+      const startItem = state.totalWorksCount === 0 ? 0 : (state.page - 1) * state.perPage + 1;
+      const endItem = Math.min(state.totalWorksCount, state.page * state.perPage);
+
+      document.getElementById("pagination-info-text").innerHTML =
+        `${state.totalWorksCount.toLocaleString("tr-TR")} sonuçtan <strong>${startItem} - ${endItem}</strong> arası gösteriliyor (Sayfa ${state.page} / ${totalPages})`;
+
+      const btnContainer = document.getElementById("pagination-buttons");
+      const pagesToShow = [1, state.page - 1, state.page, state.page + 1, totalPages]
+        .filter((p, i, arr) => p >= 1 && p <= totalPages && arr.indexOf(p) === i)
+        .sort((a, b) => a - b);
+
+      let html = `<button onclick="goToPage(${state.page - 1})" ${state.page <= 1 ? "disabled" : ""} class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40">Önceki</button>`;
+      let prev = 0;
+      pagesToShow.forEach(p => {
+        if (prev && p - prev > 1) {
+          html += `<span class="px-1 text-slate-400">...</span>`;
+        }
+        const activeClass = p === state.page
+          ? "bg-blue-600 text-white font-bold"
+          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50";
+        html += `<button onclick="goToPage(${p})" class="w-7 h-7 rounded ${activeClass}">${p}</button>`;
+        prev = p;
+      });
+      html += `<button onclick="goToPage(${state.page + 1})" ${state.page >= totalPages ? "disabled" : ""} class="px-2.5 py-1 rounded border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40">Sonraki</button>`;
+      btnContainer.innerHTML = html;
+    }
+
+    function goToPage(p) {
+      state.page = Math.max(1, p);
+      fetchWorksOnly();
+      document.getElementById("publications-section").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ===================== PAYLAŞIM & CSV İNDİRME =====================
+    function shareCurrentQuery() {
+      const params = new URLSearchParams({
+        or: state.orTerms.join(","),
+        and: state.andTerms.join(","),
+        minY: state.minYear,
+        maxY: state.maxYear,
+        pub: state.publisher
+      });
+      const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+      navigator.clipboard?.writeText(shareUrl);
+      const lbl = document.getElementById("share-btn-label");
+      lbl.textContent = "Link Kopyalandı!";
+      setTimeout(() => { lbl.textContent = "Paylaş"; }, 2000);
+    }
+
+    function exportArticlesCSV() {
+      if (!state.articles.length) {
+        alert("İndirilecek makale listesi için önce analiz yapın.");
+        return;
+      }
+      const rows = [["Baslik", "Yil", "Atif_Sayisi", "Yazarlar", "Dergi", "Yayinci", "DOI", "Makale_Ozeti_Abstract", "Link"]];
+      state.articles.forEach(a => {
+        rows.push([
+          `"${(a.title || "").replace(/"/g, '""')}"`,
+          a.year || "",
+          a.citations || 0,
+          `"${(a.authors || "").replace(/"/g, '""')}"`,
+          `"${(a.journal || "").replace(/"/g, '""')}"`,
+          `"${(a.publisher || "").replace(/"/g, '""')}"`,
+          `"${(a.doi || "").replace(/"/g, '""')}"`,
+          `"${(a.abstract || "").replace(/"/g, '""')}"`,
+          `"${a.url || ""}"`
+        ]);
+      });
+      downloadCSVFile(rows, "akademik_trend_makaleler_ve_ozetler.csv");
+    }
+
+    function exportTrendCSV() {
+      const years = Object.keys(state.yearlyCounts).sort();
+      if (!years.length) return;
+      const rows = [["Yil", "Makale_Sayisi"]];
+      years.forEach(y => rows.push([y, state.yearlyCounts[y] || 0]));
+      downloadCSVFile(rows, "yillik_makale_trendi.csv");
+    }
+
+    function downloadCSVFile(rows, filename) {
+      const csv = "\uFEFF" + rows.map(r => r.join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Klavye kısayolu (Ctrl+Enter / Cmd+Enter) ve URL parametrelerinden başlatma
+    document.addEventListener("keydown", function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        triggerSearchFromForm();
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("or")) {
+        const orList = params.get("or").split(",").filter(Boolean);
+        const andList = (params.get("and") || "").split(",").filter(Boolean);
+        const minY = parseInt(params.get("minY")) || 2018;
+        const maxY = parseInt(params.get("maxY")) || 2026;
+        runPresetSearch(orList, andList, minY, maxY);
+      }
+    });
+  </script>
+</body>
+</html>
